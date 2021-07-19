@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, Text,StyleSheet, Dimensions } from 'react-native'
-import { ListItem, Avatar } from 'react-native-elements'
+import { Card,ListItem, Avatar } from 'react-native-elements'
 
 const styles= StyleSheet.create({
     container:{
