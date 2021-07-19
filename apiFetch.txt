@@ -1,0 +1,43 @@
+NOTE Controller:
+	GET:
+	"api/Note/{note_ID}",
+	"api/Note/user/{username}",by user
+	"api/Note/family/{fam_ID}",by family
+	"api/Note/fam_member/{fam_ID}/{username}"by family member
+	
+	POST:
+	"api/Note/"  data form body
+	
+	PUT:(update)
+	"api/Note/"  data form body
+	
+	DELETE:
+	"api/Note/{note_ID}"
+	
+FAMILY Controller:
+	GET:
+	"api/Family/{fam_ID}"
+	"api/Family/members/{fam_ID}" get family members
+	
+	POST:
+	"api/Family"  //AddFamily (from body)
+	"api/Family/member" //AddMember(from body)
+	
+	DELETE:
+	"api/Family" //Delete famMember (from body)
+	"api/Family/{fam_ID}" Delete Family 
+
+USER Controller:
+	GET:
+	"api/Users/{username}"
+	"api/Users/families/{username}" Get User Families
+	
+	POST:
+	"api/Users/" //AddUser (from body) 
+	
+	PUT:
+	"api/Users/" //UpdateUser (from body) //
+	
+	DELETE:
+	//לבדוק תקינות.
+	"api/Users/{fam_ID}" //Delete User + data from body(User u)
