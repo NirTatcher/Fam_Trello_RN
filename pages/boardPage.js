@@ -74,10 +74,10 @@ const notes = [
 ]
 export default function boardPage({ navigation }) {
     const [fam_notes, setNotes] = useState([])
-    const [username,setUser] = useState("david22")
+    const [username, setUser] = useState("david22")
     const [visible, setVisible] = useState(false);
     useEffect(() => {
-        let url = 'http://ruppinmobile.tempdomain.co.il/site09/api/Note/user/'+username;
+        let url = 'http://ruppinmobile.tempdomain.co.il/site09/api/Note/user/' + username;
         fetch(url).then(
             res => res.json()).then(
                 result => {
@@ -88,15 +88,15 @@ export default function boardPage({ navigation }) {
             )
 
     }, [])
-    const SeeNoteDetails=(note)=>{
-          alert("You CLicked See Details")
+    const SeeNoteDetails = (note) => {
+        alert("You CLicked See Details")
     }
 
-      
-      
-        const toggleOverlay = () => {
-          setVisible(!visible);
-        }
+
+
+    const toggleOverlay = () => {
+        setVisible(!visible);
+    }
     return (
         <View style={styles.Wrapper}>
             <LinearGradient
@@ -104,7 +104,7 @@ export default function boardPage({ navigation }) {
                 colors={['rgba(0,0,0,0.8)', 'transparent']}
             // style={classes.Wrapper}
             >
-   {/* <View>
+                {/* <View>
       <Button title="Open Overlay" onPress={toggleOverlay} />
 
       <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
@@ -113,34 +113,34 @@ export default function boardPage({ navigation }) {
     </View> */}
                 <View>
                     {
-                        fam_notes.map((l, i) => 
-                   
-                        
-                    (   <View>
-         <TouchableOpacity onPress={toggleOverlay}>
+                        fam_notes.map((l, i) =>
+
+                        (<View>
+                            <TouchableOpacity onPress={toggleOverlay}>
                                 <ListItem key={i} bottomDivider>
                                     {/* <Avatar source={{ uri: l.avatar_url }} /> */}
                                     <ListItem.Content>
 
-                                        <ListItem.Title>{l.title} {l.created}</ListItem.Title>
+                                        <ListItem.Title>{l.title}</ListItem.Title>
                                         <ListItem.Subtitle>{l.text}</ListItem.Subtitle>
                                         <ListItem.Subtitle>{l.users_tagged}</ListItem.Subtitle>
 
                                     </ListItem.Content>
-                                    <ListItem.Chevron  />
+                                    <ListItem.Chevron />
                                 </ListItem>
                             </TouchableOpacity >
-                        <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
-                        <TouchableOpacity style={{alignSelf:'flex-end'}} onPress={toggleOverlay}>
-                        <ListItem.Chevron   />
-                        </TouchableOpacity>
-                         <Note_Overlay note={l}/>
-                        
-                        </Overlay>
-                      </View>)
-                    )
+                            <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
+
+                                <TouchableOpacity style={{ alignSelf: 'flex-end' }} onPress={toggleOverlay}>
+                                    <ListItem.Chevron />
+                                </TouchableOpacity>
+                                <Note_Overlay note={l} />
+
+                            </Overlay>
+                        </View>)
+                        )
                     }
-{/* 
+                    {/* 
                     <TouchableOpacity>
                         <ListItem key={fam_notes.title} bottomDivider>
                             <ListItem.Content>
