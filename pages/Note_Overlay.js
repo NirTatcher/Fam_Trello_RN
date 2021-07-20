@@ -1,5 +1,4 @@
 import React from 'react'
-import Styles from '../style'
 import { View, Text,StyleSheet, Dimensions } from 'react-native'
 import { Card,ListItem, Avatar } from 'react-native-elements'
 

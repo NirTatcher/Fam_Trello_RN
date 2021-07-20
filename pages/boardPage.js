@@ -9,7 +9,12 @@ import { List } from 'react-native-paper';
 import { useState } from 'react';
 import { Button, Overlay } from 'react-native-elements';
 import Note_Overlay from './Note_Overlay';
+import { Input } from 'react-native-elements/dist/input/Input';
 
+const mock_user={
+    username:"Eldad22",
+    fam_ID:"cohen222",
+}
 
 
 const styles = StyleSheet.create({
@@ -35,8 +40,6 @@ const styles = StyleSheet.create({
         height: 150,
         borderRadius: 15,
         marginTop: 30
-
-
     },
     noteRow: {
         display: 'flex',
@@ -72,10 +75,15 @@ const notes = [
     },
 
 ]
-export default function boardPage({ navigation }) {
+
+
+
+ export default function boardPage({ navigation }) {
     const [fam_notes, setNotes] = useState([])
     const [username, setUser] = useState("david22")
     const [visible, setVisible] = useState(false);
+
+
     useEffect(() => {
         let url = 'http://ruppinmobile.tempdomain.co.il/site09/api/Note/user/' + username;
         fetch(url).then(
@@ -83,10 +91,7 @@ export default function boardPage({ navigation }) {
                 result => {
                     setNotes(result)
                 }
-
-
             )
-
     }, [])
     const SeeNoteDetails = (note) => {
         alert("You CLicked See Details")
@@ -181,6 +186,7 @@ export default function boardPage({ navigation }) {
                     </View>
                 </TouchableOpacity>
             </LinearGradient>
+            <TextInput style={{backgroundColor:"white",color:"black",width:100,alignSelf:"center"}} onBlur={text=>console.log(text)} ></TextInput>
         </View>
     )
 }
