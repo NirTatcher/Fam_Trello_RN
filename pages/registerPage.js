@@ -1,11 +1,15 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import { View, Text, Button, StyleSheet, TouchableOpacity, Dimensions } from 'react-native'
 import { TextInput } from 'react-native-paper'
 import { linear } from 'react-native/Libraries/Animated/src/Easing'
 import { LinearGradient } from 'expo-linear-gradient';
 import { Switch } from 'react-native-elements';
+<<<<<<< HEAD
 import { I18nManager } from 'react-native';
 
+=======
+import {I18nManager} from 'react-native';
+>>>>>>> e1d770bc905d755e3b7e3e4d4306ddf142b96b56
 
 const classes = StyleSheet.create(
     {
@@ -13,6 +17,7 @@ const classes = StyleSheet.create(
             height: '100%',
             color: 'white', // <-- The magic
             textAlign: 'center', // <-- The magic
+<<<<<<< HEAD
         }
         , container: {
             width: Dimensions.get("window").width * 0.8,
@@ -22,6 +27,11 @@ const classes = StyleSheet.create(
         title:{
             fontSize:25,
             marginBottom:40
+=======
+            // direction:"ltr"
+            // height:100
+            // backgroundColor: linear('128deg, #491c0b 0%, #b02b26 62%, #d13d1c 100%')
+>>>>>>> e1d770bc905d755e3b7e3e4d4306ddf142b96b56
         },
         input: {
             backgroundColor: 'transparent',
@@ -62,12 +72,23 @@ export default function registerPage({ navigation }) {
     const [user, SetUser] = useState('');
     const [family, setFamily] = useState('');
 
+<<<<<<< HEAD
     
 
     function ValidateUser(){
 
     }
     I18nManager.allowRTL(true);
+=======
+    // I18nManager.allowRTL(true)
+useEffect(() => {
+    I18nManager.allowRTL(false)
+    I18nManager.forceRTL(false)
+    console.log(I18nManager.isRTL)
+    
+  
+}, [])
+>>>>>>> e1d770bc905d755e3b7e3e4d4306ddf142b96b56
 
     return (
         <View>
@@ -87,7 +108,7 @@ export default function registerPage({ navigation }) {
                             <TextInput secureTextEntry={true} placeholderTextColor='white' theme={{ colors: { primary: 'green', underline: 'none', underlineColor: 'transparent', text: 'white' } }} onChangeText={setRePass} style={classes.input} placeholder="Re-Password"></TextInput>
                             <TextInput secureTextEntry={true} placeholderTextColor='white' theme={{ colors: { primary: 'green', underline: 'none', underlineColor: 'transparent', text: 'white' } }} onChangeText={setRePass} style={classes.input} placeholder="Age"></TextInput>
                         </View>
-                        <View style={{ flexDirection: "row", justifyContent: "center" }}>
+                        <View style={{flexDirection: "row", justifyContent: "flex-end" }}>
                             <Text>Join to A family?</Text>
                             <Switch
                                 // style={{alignSelf:"center"}}
