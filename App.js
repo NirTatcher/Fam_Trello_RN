@@ -18,11 +18,14 @@ import TabNavManager from './pages/TabNavManager';
 import { I18nManager } from 'react-native';
 
 
+
 const Stack = createStackNavigator();
 export default function App() {
   const [noteTitle,setTitle] = useState("")
   const [noteDesc,setDesc] = useState("")
   const [noteUserTagged,setUserTagged] = useState([])
+  I18nManager.allowRTL(false);
+
 
   const func=async(name,value)=>{
     console.log(name," --- ",value)
@@ -34,9 +37,6 @@ export default function App() {
        userTaggedTemp= userTaggedTemp.filter(u=>u!==name)
     setUserTagged(userTaggedTemp)
   }
-
-
-
 
   return (
     // <View style={styles.container}>
