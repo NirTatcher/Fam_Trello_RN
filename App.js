@@ -15,6 +15,9 @@ import ProfilePage from './pages/profilePage';
 import BoardPage from './pages/boardPage';
 import DrawerNavManager from './pages/DrawerNavManager';
 import TabNavManager from './pages/TabNavManager';
+import { I18nManager } from 'react-native';
+
+
 const Stack = createStackNavigator();
 export default function App() {
   const [noteTitle,setTitle] = useState("")
