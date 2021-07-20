@@ -55,7 +55,7 @@ export default function App() {
 
     // </View>
     <NavigationContainer>
-    <Stack.Navigator initialRouteName="Register">
+    <Stack.Navigator initialRouteName="Board">
         <Stack.Screen name="Register" component={RegisterPage} />
         <Stack.Screen name="Login" component={LoginPage} />
         <Stack.Screen name="Profile" component={ProfilePage} />

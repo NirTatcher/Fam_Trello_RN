@@ -207,7 +207,7 @@ export default function boardPage({ navigation }) {
                     </View>
                 </TouchableOpacity>
             </LinearGradient>
-            <TextInput style={{ backgroundColor: "white", color: "black", width: 100, alignSelf: "center" }} onBlur={text => console.log(text)} ></TextInput>
+            <Button onPress={() => navigation.navigate('Register')}></Button>
         </View>
     )
 }
