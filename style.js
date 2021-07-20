@@ -1,7 +1,17 @@
-import { StyleSheet } from 'react-native';
+import {
+    StyleSheet
+} from 'react-native';
 
-export default StyleSheet.create({
-    light_grey:{
-       color:'rgb(162, 163, 187)'
+const styles = StyleSheet.create({
+    container: {
+        flex: 1
+    },
+    welcome: {
+        fontSize: 20,
+        textAlign: 'center',
+        margin: 80,
+        color: 'black'
     }
 });
+
+module.exports = styles
