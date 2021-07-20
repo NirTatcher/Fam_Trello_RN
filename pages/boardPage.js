@@ -11,9 +11,9 @@ import { Button, Overlay } from 'react-native-elements';
 import Note_Overlay from './Note_Overlay';
 import { Input } from 'react-native-elements/dist/input/Input';
 
-const mock_user={
-    username:"Eldad22",
-    fam_ID:"cohen222",
+const mock_user = {
+    username: "Eldad22",
+    fam_ID: "cohen222",
 }
 
 
@@ -64,13 +64,13 @@ const notes = [
     {
         date: '19/07/2021',
         title: 'Amy Farha',
-        description: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
+        text: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
         users_tagged: 'Vice President',
     },
     {
-        date: '19/07/2021',
+        created: '19/07/2021',
         title: 'Chris Jackson',
-        description: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
+        text: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
         users_tagged: 'Vice Chairman',
     },
 
@@ -78,10 +78,11 @@ const notes = [
 
 
 
- export default function boardPage({ navigation }) {
+export default function boardPage({ navigation }) {
     const [fam_notes, setNotes] = useState([])
     const [username, setUser] = useState("david22")
     const [visible, setVisible] = useState(false);
+    const [current, setCurrent] = useState(0);
 
 
     useEffect(() => {
@@ -99,7 +100,12 @@ const notes = [
 
 
 
-    const toggleOverlay = () => {
+    const toggleOverlay = (e) => {
+        console.log(e)
+        if (visible === false)
+            setCurrent(e)
+        else
+            setCurrent(null)
         setVisible(!visible);
     }
     return (
@@ -118,10 +124,11 @@ const notes = [
     </View> */}
                 <View>
                     {
-                        fam_notes.map((l, i) =>
+                        //fam_notes.map((l,i)=>
+                        notes.map((l, i) =>
 
-                        (<View>
-                            <TouchableOpacity onPress={toggleOverlay}>
+                        (<View key={i}>
+                            <TouchableOpacity key={i} onPress={()=>toggleOverlay(i)}>
                                 <ListItem key={i} bottomDivider>
                                     {/* <Avatar source={{ uri: l.avatar_url }} /> */}
                                     <ListItem.Content>
@@ -134,30 +141,44 @@ const notes = [
                                     <ListItem.Chevron />
                                 </ListItem>
                             </TouchableOpacity >
-                            <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
 
-                                <TouchableOpacity style={{ alignSelf: 'flex-end' }} onPress={toggleOverlay}>
-                                    <ListItem.Chevron />
-                                </TouchableOpacity>
-                                <Note_Overlay note={l} />
-
-                            </Overlay>
                         </View>)
                         )
                     }
-                    {/* 
-                    <TouchableOpacity>
-                        <ListItem key={fam_notes.title} bottomDivider>
-                            <ListItem.Content>
+                    <Overlay isVisible={visible} onBackdropPress={()=>toggleOverlay(current)}>
 
-                                <ListItem.Title>{fam_notes.title} {fam_notes.created}</ListItem.Title>
-                                <ListItem.Subtitle>{fam_notes.text}</ListItem.Subtitle>
-             
-
-                            </ListItem.Content>
+                        <TouchableOpacity key={current} style={{ alignSelf: 'flex-end' }} onPress={()=>toggleOverlay(current)}>
                             <ListItem.Chevron />
-                        </ListItem>
-                    </TouchableOpacity> */}
+                        </TouchableOpacity>
+                        <Note_Overlay note={notes[current]} />
+
+                    </Overlay>
+
+                    {/* <View>
+                        <TouchableOpacity onPress={toggleOverlay}>
+                            <ListItem bottomDivider>
+                                <Avatar source={{ uri: l.avatar_url }} />
+                                <ListItem.Content>
+
+                                    <ListItem.Title>Title</ListItem.Title>
+                                    <ListItem.Subtitle>Text</ListItem.Subtitle>
+                                    <ListItem.Subtitle>Users</ListItem.Subtitle>
+
+                                </ListItem.Content>
+                                <ListItem.Chevron />
+                            </ListItem>
+                        </TouchableOpacity >
+                        <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
+
+                            <TouchableOpacity style={{ alignSelf: 'flex-end' }} onPress={toggleOverlay}>
+                                <ListItem.Chevron />
+                            </TouchableOpacity>
+                            <Note_Overlay note={{ title: 'title', text: 'text' }} />
+
+                        </Overlay>
+                    </View> */}
+
+
                 </View>
                 <Text>BOARD PAGE</Text>
                 {/* <View style={styles.notesWrapper}>
@@ -186,7 +207,7 @@ const notes = [
                     </View>
                 </TouchableOpacity>
             </LinearGradient>
-            <TextInput style={{backgroundColor:"white",color:"black",width:100,alignSelf:"center"}} onBlur={text=>console.log(text)} ></TextInput>
+            <TextInput style={{ backgroundColor: "white", color: "black", width: 100, alignSelf: "center" }} onBlur={text => console.log(text)} ></TextInput>
         </View>
     )
 }
