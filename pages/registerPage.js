@@ -5,7 +5,6 @@ import { linear } from 'react-native/Libraries/Animated/src/Easing'
 import { LinearGradient } from 'expo-linear-gradient';
 import { Switch } from 'react-native-elements';
 import { I18nManager } from 'react-native';
-import $ from 'jquery';
 
 
 const classes = StyleSheet.create(
@@ -67,8 +66,9 @@ export default function registerPage({ navigation }) {
     I18nManager.forceRTL(false);
     
 
-    function ValidateUser(){
+    async function ValidateUser(){
         
+        if()
 
         let user = {
             username,
@@ -78,18 +78,32 @@ export default function registerPage({ navigation }) {
             fam_ID,
         };
 
-        let url_get_user = "http://ruppinmobile.tempdomain.co.il/site09/api/User"+user.username;
+        let url_get_user = "http://ruppinmobile.tempdomain.co.il/site09/api/Users/hen";
         
-        fetch(url_get_user)
-        .then((res)=>{
-            console.log(res)
-        })
-        .catch((err)=>console.log(err))
+        await fetch(url_get_user, {
+            method: 'GET',
+            headers: new Headers({
+                'Content-Type': 'application/json; charset=utf8',
+            })
+
+        }).then(
+            res => {
+                console.log(res.ok)//true
+                if(res.status !== 200 ){
+                    console.log("we might have a problem.."+res.status);
+                    return;
+                }
+                return res.json();
+            }
+        )
 
         return user;
         
     }
     
+    function CheckUserAvilable(user){
+
+    }
 
     return (
         <View>

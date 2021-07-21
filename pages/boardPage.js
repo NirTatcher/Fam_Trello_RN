@@ -10,7 +10,7 @@ import { useState } from 'react';
 import { Button, Overlay, Icon } from 'react-native-elements';
 import Note_Overlay from './Note_Overlay';
 import { Input } from 'react-native-elements/dist/input/Input';
-import $, { error } from 'jquery';
+// import $, { error } from 'jquery';
 const mock_user = {
     username: "Eldad22",
     fam_ID: "cohen222",
@@ -91,32 +91,7 @@ export default function boardPage({ navigation }) {
     useEffect(() => {
         let urlFamNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/family/cohen222";
         let urlCurrentNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/fam_member/" + fam_ID + "/" + username;
-
-        // $.ajax({
-        //     type:'POST',
-        //     url:urlFamNotes,
-        //     dataType:'json',
-        //     data:"{}",
-        //     contentType:'application/x-www-form-urlencoded; charset=utf8',
-        //     success:(result)=>{ 
-        //         console.log(result.d)
-        //     },
-        //     error:(jqXHR,exeption)=>{
-
-        //         console.log('getting fam notes failed' +jqXHR + " " + exeption)
-        //     }
-        // })
-
-        // $.ajax({
-        //     type:'GET',
-        //     url:urlCurrentNotes,
-        //     // dataType:'json',
-        //     contentType:'application/x-www-form-urlencoded; charset=utf8',
-        //     success:function(result){ setCurrentUserNotes(result)
-        //     }
-
-        // })
-     
+    
             fetch(urlFamNotes, {
                 method: 'GET',
                 headers: new Headers({
@@ -127,10 +102,9 @@ export default function boardPage({ navigation }) {
                 res => {
                     console.log(res.ok)
                     if(res.ok)
-                    return res.json()
+                        return res.json()
                     else
-                    throw 'Oops something went wrong with the fam notes you are trying to bring from db..'
-                  
+                        throw 'Oops something went wrong with the fam notes you are trying to bring from db..'
                 }
             ).then(
                 (result) => {
