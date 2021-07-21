@@ -62,7 +62,8 @@ export default function registerPage({ navigation }) {
     const [user, SetUser] = useState('');
     const [family, setFamily] = useState('');
 
-    I18nManager.allowRTL(true);
+    I18nManager.allowRTL(false);
+    I18nManager.forceRTL(false);
     
 
     function ValidateUser(){
@@ -78,15 +79,14 @@ export default function registerPage({ navigation }) {
                     locations={[0.5, 1]}
                     colors={['rgb(226, 149, 120)', 'rgb(71, 49, 68)']} // Background Linear Gradient
                 >
-                    
                     <View style={classes.container}>
                     <Text style={classes.title}>REGISTER</Text>
                         <View style={classes.inputWrapper}>
                             <TextInput theme={{ colors: { primary: 'green', text: 'white', } }} placeholderTextColor='white' onChangeText={setUsername} style={classes.input} placeholder="Username"></TextInput>
-                            <TextInput secureTextEntry={true} placeholderTextColor='white' theme={{ colors: { primary: 'green', underline: 'none', underlineColor: 'transparent', text: 'white' } }} onChangeText={setRePass} style={classes.input} placeholder="Name"></TextInput>
+                            <TextInput secureTextEntry={true} placeholderTextColor='white' theme={{ colors: { primary: 'green', underline: 'none', underlineColor: 'transparent', text: 'white' } }} onChangeText={setFisrtName} style={classes.input} placeholder="Name"></TextInput>
                             <TextInput secureTextEntry={true} placeholderTextColor='white' theme={{ colors: { primary: 'black', underline: 'none', underlineColor: 'transparent', text: 'white' } }} onChangeText={setPass} style={classes.input} placeholder="Password"></TextInput>
                             <TextInput secureTextEntry={true} placeholderTextColor='white' theme={{ colors: { primary: 'green', underline: 'none', underlineColor: 'transparent', text: 'white' } }} onChangeText={setRePass} style={classes.input} placeholder="Re-Password"></TextInput>
-                            <TextInput secureTextEntry={true} placeholderTextColor='white' theme={{ colors: { primary: 'green', underline: 'none', underlineColor: 'transparent', text: 'white' } }} onChangeText={setRePass} style={classes.input} placeholder="Age"></TextInput>
+                            <TextInput secureTextEntry={true} placeholderTextColor='white' theme={{ colors: { primary: 'green', underline: 'none', underlineColor: 'transparent', text: 'white' } }} onChangeText={setAge} style={classes.input} placeholder="Age"></TextInput>
                         </View>
                         <View style={{flexDirection: "row", justifyContent: "flex-end" }}>
                             <Text>Join to A family?</Text>
