@@ -1,16 +1,16 @@
 import { useFocusEffect } from '@react-navigation/core'
 import React, { useEffect } from 'react'
-import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView } from 'react-native'
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import profilePage from './profilePage'
 import { LinearGradient } from 'expo-linear-gradient';
 import { ListItem, Avatar } from 'react-native-elements'
 import { List } from 'react-native-paper';
 import { useState } from 'react';
-import { Button, Overlay } from 'react-native-elements';
+import { Button, Overlay, Icon } from 'react-native-elements';
 import Note_Overlay from './Note_Overlay';
 import { Input } from 'react-native-elements/dist/input/Input';
-
+import $, { error } from 'jquery';
 const mock_user = {
     username: "Eldad22",
     fam_ID: "cohen222",
@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
     Wrapper: {
         height: '100%',
         backgroundColor: '#491c0b',
+        // overflow:'scroll'
     }
 });
 
@@ -79,20 +80,77 @@ const notes = [
 
 
 export default function boardPage({ navigation }) {
-    const [fam_notes, setNotes] = useState([])
+    const [fam_notes, setFamNotes] = useState([])
+    const [curret_user_notes, setCurrentUserNotes] = useState([])
     const [username, setUser] = useState("david22")
     const [visible, setVisible] = useState(false);
     const [current, setCurrent] = useState(0);
+    const [fam_ID, setFamID] = useState("cohen222");
 
 
     useEffect(() => {
-        let url = 'http://ruppinmobile.tempdomain.co.il/site09/api/Note/user/' + username;
-        fetch(url).then(
-            res => res.json()).then(
-                result => {
-                    setNotes(result)
+        let urlFamNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/family/cohen222" ;
+        let urlCurrentNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/fam_member/" + fam_ID + "/" + username;
+
+        // $.ajax({
+        //     type:'POST',
+        //     url:urlFamNotes,
+        //     dataType:'json',
+        //     data:"{}",
+        //     contentType:'application/x-www-form-urlencoded; charset=utf8',
+        //     success:(result)=>{ 
+        //         console.log(result.d)
+        //     },
+        //     error:(jqXHR,exeption)=>{
+
+        //         console.log('getting fam notes failed' +jqXHR + " " + exeption)
+        //     }
+        // })
+
+        // $.ajax({
+        //     type:'GET',
+        //     url:urlCurrentNotes,
+        //     // dataType:'json',
+        //     contentType:'application/x-www-form-urlencoded; charset=utf8',
+        //     success:function(result){ setCurrentUserNotes(result)
+        //     }
+
+        // })
+
+        fetch(urlFamNotes,{
+            method:'GET',
+            headers:new Headers({
+                'Content-Type':'application/json; charset=utf8',
+            })
+
+        }).then(
+            res => {
+                console.log(res.status)
+                return res.json()}
+            ).then(
+                (result) => {
+                    // setFamNotes(result)
+                    try{
+                        setFamNotes(result)
+
+                    }
+                    catch(error){
+                        console.log("WTF");
+                    }
                 }
+              
+            ).catch(
+                (error)=>{console.log("ERROR")}
             )
+        // fetch(urlCurrentNotes).then(
+        //     res => res.json()).then(
+        //         result => {
+        //             setCurrentUserNotes(result)
+        //         },
+        //         error=>console.log("error in current notes " + error)
+        //     )
+
+
     }, [])
     const SeeNoteDetails = (note) => {
         alert("You CLicked See Details")
@@ -109,52 +167,77 @@ export default function boardPage({ navigation }) {
         setVisible(!visible);
     }
     return (
-        <View style={styles.Wrapper}>
-            <LinearGradient
-                // Background Linear Gradient
-                colors={['rgba(0,0,0,0.8)', 'transparent']}
-            // style={classes.Wrapper}
-            >
-                {/* <View>
+        <ScrollView>
+            <View style={styles.Wrapper}>
+                <LinearGradient
+                    // Background Linear Gradient
+                    colors={['rgba(0,0,0,0.8)', 'transparent']}
+                // style={classes.Wrapper}
+                >
+                    {/* <View>
       <Button title="Open Overlay" onPress={toggleOverlay} />
 
       <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
        <Note_Overlay note={}/>
       </Overlay>
     </View> */}
-                <View>
-                    {
-                        //fam_notes.map((l,i)=>
-                        notes.map((l, i) =>
+                    <View>
 
-                        (<View key={i}>
-                            <TouchableOpacity key={i} onPress={()=>toggleOverlay(i)}>
-                                <ListItem key={i} bottomDivider>
-                                    {/* <Avatar source={{ uri: l.avatar_url }} /> */}
-                                    <ListItem.Content>
+                        <Text>All Tasks</Text>
 
-                                        <ListItem.Title>{l.title}</ListItem.Title>
-                                        <ListItem.Subtitle>{l.text}</ListItem.Subtitle>
-                                        <ListItem.Subtitle>{l.users_tagged}</ListItem.Subtitle>
+                        {
+                           fam_notes.map((l, i) =>
+                                // notes.map((l, i) =>0
+                                curret_user_notes.find(n => n.title === l.title) !== undefined ?
+                                    (<View key={i}>
 
-                                    </ListItem.Content>
-                                    <ListItem.Chevron />
-                                </ListItem>
-                            </TouchableOpacity >
+                                        <TouchableOpacity key={i} onPress={() => toggleOverlay(i)}>
+                                            <ListItem key={i} bottomDivider>
+                                                <ListItem.Content>
 
-                        </View>)
-                        )
-                    }
-                    <Overlay isVisible={visible} onBackdropPress={()=>toggleOverlay(current)}>
+                                                    <ListItem.Title>{l.title} <Icon
+                                                        name="edit"
+                                                        color="black"
+                                                    /></ListItem.Title>
+                                                    <ListItem.Subtitle>{l.text}</ListItem.Subtitle>
+                                                    <ListItem.Subtitle>{l.users_tagged}</ListItem.Subtitle>
 
-                        <TouchableOpacity key={current} style={{ alignSelf: 'flex-end' }} onPress={()=>toggleOverlay(current)}>
-                            <ListItem.Chevron />
-                        </TouchableOpacity>
-                        <Note_Overlay note={notes[current]} />
+                                                </ListItem.Content>
+                                                <ListItem.Chevron />
+                                            </ListItem>
+                                        </TouchableOpacity >
 
-                    </Overlay>
+                                    </View>)
+                                    :
+                                    (<View key={i}>
+                                        {console.log(l.created)}
+                                        <TouchableOpacity key={i} onPress={() => toggleOverlay(i)}>
+                                            <ListItem key={i} bottomDivider>
+                                                {/* <Avatar source={{ uri: l.avatar_url }} /> */}
+                                                <ListItem.Content>
 
-                    {/* <View>
+                                                    <ListItem.Title>{l.title}</ListItem.Title>
+                                                    <ListItem.Subtitle>{l.text}</ListItem.Subtitle>
+                                                    <ListItem.Subtitle>{l.users_tagged}</ListItem.Subtitle>
+
+                                                </ListItem.Content>
+                                                <ListItem.Chevron />
+                                            </ListItem>
+                                        </TouchableOpacity >
+
+                                    </View>)
+                            )
+                        }
+                        <Overlay isVisible={visible} onBackdropPress={() => toggleOverlay(current)}>
+
+                            <TouchableOpacity key={current} style={{ alignSelf: 'flex-end' }} onPress={() => toggleOverlay(current)}>
+                                <ListItem.Chevron />
+                            </TouchableOpacity>
+                            <Note_Overlay note={fam_notes[current]} />
+
+                        </Overlay>
+
+                        {/* <View>
                         <TouchableOpacity onPress={toggleOverlay}>
                             <ListItem bottomDivider>
                                 <Avatar source={{ uri: l.avatar_url }} />
@@ -179,9 +262,9 @@ export default function boardPage({ navigation }) {
                     </View> */}
 
 
-                </View>
-                <Text>BOARD PAGE</Text>
-                {/* <View style={styles.notesWrapper}>
+                    </View>
+                    <Text>BOARD PAGE</Text>
+                    {/* <View style={styles.notesWrapper}>
                     <View style={styles.noteRow}>
                         <TouchableOpacity>
                             <View style={styles.container} ><Text >123</Text></View>
@@ -201,13 +284,18 @@ export default function boardPage({ navigation }) {
 
                     </View>
                 </View> */}
-                <TouchableOpacity>
-                    <View style={{ backgroundColor: 'yellow' }}>
-                        <Text onPress={() => navigation.navigate('Profile')}>Press me to go to profile</Text>
-                    </View>
-                </TouchableOpacity>
-            </LinearGradient>
-            <Button onPress={() => navigation.navigate('Register')}></Button>
-        </View>
+                    <TouchableOpacity>
+                        <View style={{ backgroundColor: 'yellow' }}>
+                            <Text onPress={() => navigation.navigate('Profile')}>Press me to go to profile</Text>
+                        </View>
+                    </TouchableOpacity>
+                </LinearGradient>
+                <Button onPress={() => navigation.navigate('Register')}></Button>
+                <Icon
+                    name="add"
+                    color="white"
+                />
+            </View>
+        </ScrollView>
     )
 }

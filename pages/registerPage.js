@@ -5,6 +5,7 @@ import { linear } from 'react-native/Libraries/Animated/src/Easing'
 import { LinearGradient } from 'expo-linear-gradient';
 import { Switch } from 'react-native-elements';
 import { I18nManager } from 'react-native';
+import $ from 'jquery';
 
 
 const classes = StyleSheet.create(
@@ -51,11 +52,11 @@ const classes = StyleSheet.create(
 
 
 export default function registerPage({ navigation }) {
-    const [username, setUsername] = useState("");
+    const [username, setUsername] = useState("david22");
     const [password, setPass] = useState("");
     const [rePassword, setRePass] = useState("");
     const [first_name, setFisrtName] = useState('')
-    const [age, setAge] = useState('')
+    const [age, setAge] = useState(2)
     const [fam_ID, setFamID] = useState('');
     const [has_family, setHasFamily] = useState(false)
 
@@ -67,7 +68,26 @@ export default function registerPage({ navigation }) {
     
 
     function ValidateUser(){
+        
 
+        let user = {
+            username,
+            password,
+            first_name,
+            age,
+            fam_ID,
+        };
+
+        let url_get_user = "http://ruppinmobile.tempdomain.co.il/site09/api/User"+user.username;
+        
+        fetch(url_get_user)
+        .then((res)=>{
+            console.log(res)
+        })
+        .catch((err)=>console.log(err))
+
+        return user;
+        
     }
     
 
@@ -102,18 +122,11 @@ export default function registerPage({ navigation }) {
                             <View></View>
                         </View>
                         <TouchableOpacity
-                            style={classes.Btn}
+                            onPress ={()=>console.log(ValidateUser())}
+                            style={classes.Btn}>
 
-                            onPress={() => {
-                                if (password !== rePassword) {
-                                    alert("Passwords must match")
-                                    return
-                                }
-                                else {
-                                    alert("Hello " + username + " !")
-                                    navigation.navigate("Login")
-                                }
-                            }}><Text style={classes.BtnText}>123</Text></TouchableOpacity>
+                            <Text style={classes.BtnText}>123</Text>
+                        </TouchableOpacity>
                     </View>
                 </LinearGradient>
             </View>
