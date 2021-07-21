@@ -1,6 +1,6 @@
 import { useFocusEffect } from '@react-navigation/core'
 import React, { useEffect } from 'react'
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView, Alert } from 'react-native'
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import profilePage from './profilePage'
 import { LinearGradient } from 'expo-linear-gradient';
@@ -89,7 +89,7 @@ export default function boardPage({ navigation }) {
 
 
     useEffect(() => {
-        let urlFamNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/family/cohen222" ;
+        let urlFamNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/family/cohen222";
         let urlCurrentNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/fam_member/" + fam_ID + "/" + username;
 
         // $.ajax({
@@ -116,32 +116,65 @@ export default function boardPage({ navigation }) {
         //     }
 
         // })
+     
+            fetch(urlFamNotes, {
+                method: 'GET',
+                headers: new Headers({
+                    'Content-Type': 'application/json; charset=utf8',
+                })
 
-        fetch(urlFamNotes,{
-            method:'GET',
-            headers:new Headers({
-                'Content-Type':'application/json; charset=utf8',
-            })
-
-        }).then(
-            res => {
-                console.log(res.status)
-                return res.json()}
+            }).then(
+                res => {
+                    console.log(res.ok)
+                    if(res.ok)
+                    return res.json()
+                    else
+                    throw 'Oops something went wrong with the fam notes you are trying to bring from db..'
+                  
+                }
             ).then(
                 (result) => {
                     // setFamNotes(result)
-                    try{
-                        setFamNotes(result)
 
-                    }
-                    catch(error){
-                        console.log("WTF");
-                    }
+                    setFamNotes(result)
+
+                },
+                (err) => {
+                    Alert.alert("",err)
+             
                 }
-              
-            ).catch(
-                (error)=>{console.log("ERROR")}
             )
+       
+
+            fetch(urlCurrentNotes, {
+                method: 'GET',
+                headers: new Headers({
+                    'Content-Type': 'application/json; charset=utf8',
+                })
+
+            }).then(
+                res => {
+                    console.log(res.ok)
+                    if(res.ok)
+                    return res.json()
+                    else
+                    throw 'Oops something went wrong with the current user notes you are trying to bring from db..'
+                  
+                }
+            ).then(
+                (result) => {
+                    // setFamNotes(result)
+
+                    setCurrentUserNotes(result)
+
+                },
+                (err) => {
+                    Alert.alert("",err)
+             
+                }
+            )
+       
+
         // fetch(urlCurrentNotes).then(
         //     res => res.json()).then(
         //         result => {
@@ -186,7 +219,7 @@ export default function boardPage({ navigation }) {
                         <Text>All Tasks</Text>
 
                         {
-                           fam_notes.map((l, i) =>
+                            fam_notes.map((l, i) =>
                                 // notes.map((l, i) =>0
                                 curret_user_notes.find(n => n.title === l.title) !== undefined ?
                                     (<View key={i}>
