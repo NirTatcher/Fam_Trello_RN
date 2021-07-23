@@ -4,9 +4,11 @@ NOTE Controller:
 	"api/Note/user/{username}",by user
 	"api/Note/family/{fam_ID}",by family
 	"api/Note/fam_member/{fam_ID}/{username}"by family member
+	"api/Note/tagged/{note_ID}" get tagged users
 	
 	POST:
 	"api/Note/"  data form body
+	"api/Note/tagged/" send tagged users - arr from body ex.[{note_ID:503,username:"Eldad22"},{note_ID:503,username:"david22"}]
 	
 	PUT:(update)
 	"api/Note/"  data form body
@@ -28,15 +30,17 @@ FAMILY Controller:
 	"api/Family/{fam_ID}" Delete Family 
 
 USER Controller:
+	fix name in api route 'User' instaed 'Users'
+	
 	GET:
-	"api/Users/{username}"
-	"api/Users/families/{username}" Get User Families
+	"api/User/{username}"
+	"api/User/families/{username}" Get User Families
 	
 	POST:
-	"api/Users/" //AddUser (from body) 
+	"api/User/" //AddUser (from body) 
 	
 	PUT:
-	"api/Users/" //UpdateUser (from body) //
+	"api/User/" //UpdateUser (from body) //
 	
 	DELETE:
 	//לבדוק תקינות.
