@@ -68,7 +68,7 @@ export default function registerPage({ navigation }) {
 
     async function ValidateUser(){
         
-        if()
+        // if()
 
         let user = {
             username,

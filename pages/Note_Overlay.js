@@ -40,11 +40,11 @@ export default function Note_Overlay(props) {
         <View style={styles.container}>
              
             <View style={styles.title_area}>
-                <Text style={styles.title}>{props.note.title}</Text>
-                <Text style={styles.date}>{new Date(props.note.created).toDateString()}</Text>
+                <Text style={styles.title}>{props.note?.title}</Text>
+                <Text style={styles.date}>{new Date(props.note?.created).toDateString()}</Text>
             </View>
             <View style={styles.text_area}>
-                <Text>{props.note.text}</Text>
+                <Text>{props.note?.text}</Text>
             </View>
             {/* <Text>Users Tagged: {props.note.users_tagged}</Text> */}
 

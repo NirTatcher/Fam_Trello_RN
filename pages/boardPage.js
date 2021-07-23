@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { Button, Overlay, Icon } from 'react-native-elements';
 import Note_Overlay from './Note_Overlay';
 import { Input } from 'react-native-elements/dist/input/Input';
+import { log } from 'react-native-reanimated';
 // import $, { error } from 'jquery';
 const mock_user = {
     username: "Eldad22",
@@ -78,7 +79,13 @@ const notes = [
 ]
 
 
-
+const func1 = (res) => {
+    console.log(res.ok)
+    if (res.ok)
+        return res.json()
+    else
+        throw 'Oops something went wrong with the current user notes you are trying to bring from db..'
+}
 export default function boardPage({ navigation }) {
     const [fam_notes, setFamNotes] = useState([])
     const [curret_user_notes, setCurrentUserNotes] = useState([])
@@ -87,75 +94,75 @@ export default function boardPage({ navigation }) {
     const [current, setCurrent] = useState(0);
     const [fam_ID, setFamID] = useState("cohen222");
 
+    const fetchFamNotes = (urlFamNotes) => {
+        fetch(urlFamNotes, {
+            method: 'GET',
+            headers: new Headers({
+                'Content-Type': 'application/json; charset=utf8',
+            })
 
-    useEffect(() => {
+        }).then(
+            res => {
+                console.log(res.ok)
+                if (res.ok)
+                    return res.json()
+                else
+                    return () => { throw 'Oops something went wrong with the fam notes you are trying to bring from db..' }
+                //  func1(res)
+            }
+        ).then(
+            (result) => {
+                // setFamNotes(result)
+
+                setFamNotes(result)
+
+            },
+            (err) => {
+                Alert.alert("", err)
+
+            }
+        )
+    }
+    const fetchUsersNotes = (urlCurrentNotes) => {
+        fetch(urlCurrentNotes, {
+            method: 'GET',
+            headers: new Headers({
+                'Content-Type': 'application/json; charset=utf8',
+            })
+
+        }).then(
+            res => {
+                // console.log(res.ok)
+                // if(res.ok)
+                // return res.json()
+                // else
+                // throw 'Oops something went wrong with the current user notes you are trying to bring from db..'
+                return res.json()
+
+            }
+        ).then(
+            (result) => {
+                // setFamNotes(result)
+
+                setCurrentUserNotes(result)
+
+            },
+            (err) => {
+                Alert.alert("", err)
+
+            }
+        )
+    }
+    useEffect(async () => {
         let urlFamNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/family/cohen222";
         let urlCurrentNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/fam_member/" + fam_ID + "/" + username;
-    
-            fetch(urlFamNotes, {
-                method: 'GET',
-                headers: new Headers({
-                    'Content-Type': 'application/json; charset=utf8',
-                })
 
-            }).then(
-                res => {
-                    console.log(res.ok)
-                    if(res.ok)
-                        return res.json()
-                    else
-                        throw 'Oops something went wrong with the fam notes you are trying to bring from db..'
-                }
-            ).then(
-                (result) => {
-                    // setFamNotes(result)
 
-                    setFamNotes(result)
 
-                },
-                (err) => {
-                    Alert.alert("",err)
-             
-                }
-            )
-       
+        await fetchFamNotes(urlFamNotes)
 
-            fetch(urlCurrentNotes, {
-                method: 'GET',
-                headers: new Headers({
-                    'Content-Type': 'application/json; charset=utf8',
-                })
+        await fetchUsersNotes(urlCurrentNotes)
 
-            }).then(
-                res => {
-                    console.log(res.ok)
-                    if(res.ok)
-                    return res.json()
-                    else
-                    throw 'Oops something went wrong with the current user notes you are trying to bring from db..'
-                  
-                }
-            ).then(
-                (result) => {
-                    // setFamNotes(result)
-
-                    setCurrentUserNotes(result)
-
-                },
-                (err) => {
-                    Alert.alert("",err)
-             
-                }
-            )
-       
-
-        // fetch(urlCurrentNotes).then(
-        //     res => res.json()).then(
-        //         result => {
-        //             setCurrentUserNotes(result)
-        //         },
-        //         error=>console.log("error in current notes " + error)
-        //     )
 
 
     }, [])
@@ -164,7 +171,41 @@ export default function boardPage({ navigation }) {
     }
 
 
+    const addingNote = async (note) => {
+  
+        
+        await fetch('http://ruppinmobile.tempdomain.co.il/site09/api/Note/',
+        {
+            method:'POST',
+            body:JSON.stringify(note),
+            headers:new Headers({
+                'Content-type':'application/json; charset=UTF-8'
+            })
 
+        }
+       
+        ).then(
+            res=>{
+                console.log(res)
+                return res.json()
+            }
+        ).then(
+           async (result)=>{
+              console.log(result)
+            },
+            (error)=>
+                console.log(error)
+            
+        )
+
+        
+    
+    }
+    // useEffect(async() => {
+    //     let urlCurrentNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/fam_member/" + fam_ID + "/" + username;
+    //    await fetchUsersNotes(urlCurrentNotes)
+     
+    // }, [curret_user_notes])
     const toggleOverlay = (e) => {
         console.log(e)
         if (visible === false)
@@ -193,7 +234,7 @@ export default function boardPage({ navigation }) {
                         <Text>All Tasks</Text>
 
                         {
-                            fam_notes.map((l, i) =>
+                            fam_notes?.map((l, i) =>
                                 // notes.map((l, i) =>0
                                 curret_user_notes.find(n => n.title === l.title) !== undefined ?
                                     (<View key={i}>
@@ -240,7 +281,7 @@ export default function boardPage({ navigation }) {
                             <TouchableOpacity key={current} style={{ alignSelf: 'flex-end' }} onPress={() => toggleOverlay(current)}>
                                 <ListItem.Chevron />
                             </TouchableOpacity>
-                            <Note_Overlay note={fam_notes[current]} />
+                            <Note_Overlay note={current ? fam_notes[current] : null} />
 
                         </Overlay>
 
@@ -298,10 +339,16 @@ export default function boardPage({ navigation }) {
                     </TouchableOpacity>
                 </LinearGradient>
                 <Button onPress={() => navigation.navigate('Register')}></Button>
-                <Icon
-                    name="add"
-                    color="white"
-                />
+                <Text>TOTOTTOTOTOTOT</Text>
+
+                <TouchableOpacity onPress={() => navigation.navigate('AddNote', { addingNote })}>
+                    <Icon
+
+
+                        name="add"
+                        color="white"
+                    />
+                </TouchableOpacity>
             </View>
         </ScrollView>
     )
