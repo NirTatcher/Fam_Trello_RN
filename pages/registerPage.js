@@ -78,7 +78,7 @@ export default function registerPage({ navigation }) {
             fam_ID,
         };
 
-        let url_get_user = "http://ruppinmobile.tempdomain.co.il/site09/api/Users/hen";
+        let url_get_user = "http://ruppinmobile.tempdomain.co.il/site09/api/User/"+user.username;
         
         await fetch(url_get_user, {
             method: 'GET',
