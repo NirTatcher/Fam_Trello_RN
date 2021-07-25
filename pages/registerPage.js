@@ -23,7 +23,6 @@ const classes = StyleSheet.create(
             height: Dimensions.get("window").height,
             alignSelf: 'center',
 
-
         },
         container: {
             backgroundColor: "grey",
@@ -70,7 +69,7 @@ export default function registerPage({ navigation }) {
     const [age, setAge] = useState(2)
     const [fam_ID, setFamID] = useState('');
     const [has_family, setHasFamily] = useState(false)
-    const [errors,setErrors]=useState({usernmae:true,password:true,re_padd:true})
+    const [errors, setErrors] = useState({ username: "", password: "", pass_warning:true, re_pass: "" })
 
     const [user, SetUser] = useState('');
     const [family, setFamily] = useState('');
@@ -116,8 +115,35 @@ export default function registerPage({ navigation }) {
 
     }
 
-    const handleErrors = (err)=> {
-       switch(err.id){}
+    const ErrHandler = (field) => {
+        console.log(field);
+        switch (field) {
+            case 'username':
+                if (username.length < 4) {
+                    setErrors({ username: "Username must be aleast 4 letter." })
+                    return;
+                }
+                else if (username.match(/\d+/g) === null) {
+                    setErrors({ username: "Username must contain at least 1 digit." })
+                    return;
+                }
+                else
+                    setErrors({ username: "" })
+                break;
+            case 'password':
+                console.log(errors.password);
+                if (password.length < 6)
+                    setErrors({ password: "Password must containe at least 6 digits." ,pass_warning:false})
+                else
+                    setErrors({ password: "" ,pass_warning:false})  
+                return;
+
+
+            // username.length < 4?setErrors({username:"Username must be aleast 4 letter."}):setErrors({username:""})   
+            // username.match(/\d+/g) === null?setErrors({username:"Username must contain at least 1 digit."}):setErrors({username:""})
+
+
+        }
     }
 
     return (
@@ -129,40 +155,57 @@ export default function registerPage({ navigation }) {
                     colors={['rgb(240, 101, 67)', 'rgb(238, 148, 128)']} // Background Linear Gradient
                 >
                     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} >
-                    <Text style={classes.title}>Welcome,</Text>
-                    <View style={classes.inner_warpper}>
-                        <View style={classes.inputWrapper}>
-                            <Input
-                                col
-                                leftIcon={
-                                    <Icon
-                                        name='user'
-                                        size={20}
-                                        color='black'
-                                    />
-                                }
-                                label="Username"
-                                labelStyle={{color:"black"}}
-                                errorStyle={{ color: 'red' }}
-                                errorMessage={(!errors.password?"INVALID PASSWORD":"")}
-                                placeholder='Username'
-                                onChangeText={setUsername}
-                                onBlur={()=>console.log("blur")}
-                            />
-                            {/* <Text style={classes.input}>enter username</Text>
+                        <Text style={classes.title}>Welcome,</Text>
+                        <View style={classes.inner_warpper}>
+                            <View style={classes.inputWrapper}>
+
+                                <Input
+                                    leftIcon={
+                                        <Icon
+                                            name='user'
+                                            size={20}
+                                            color='black'
+                                        />
+                                    }
+                                    label="Username"
+                                    labelStyle={{ color: "black" }}
+                                    errorStyle={{ color:"red"}}
+                                    errorMessage={errors.username}
+                                    placeholder='Username'
+                                    onChangeText={setUsername}
+                                    onBlur={(e) => ErrHandler('username')}
+                                />
+                                <Input
+                                    leftIcon={
+                                        <Icon
+                                            name='lock'
+                                            size={20}
+                                            color='black'
+                                        />
+                                    }
+                                    label="Password"
+                                    labelStyle={{ color: "black" }}
+                                    errorStyle={(errors.pass_warning === true?{color:"yellow"}:{color:"red"})}
+                                    errorMessage={errors.password}
+                                    placeholder='Password'
+                                    secureTextEntry={true}
+                                    onChangeText={setPass}
+                                    onBlur={(e) => ErrHandler('password')}
+                                />
+                                {/* <Text style={classes.input}>enter username</Text>
                             <TextInput style={classes.input} onChangeText={setUsername}></TextInput>
                             <Text style={classes.input}>enter password</Text>
                             <TextInput style={classes.input} ></TextInput> */}
-                            <Button
-                                style={classes.input}
-                                color="rgb(131, 128, 182)"
-                                title="register"
-                                onPress={()=>console.log("b")} />
+                                <Button
+                                    style={classes.input}
+                                    color="rgb(131, 128, 182)"
+                                    title="register"
+                                    onPress={() => console.log("b")} />
+                            </View>
+
+
+
                         </View>
-
-
-
-                    </View>
                     </TouchableWithoutFeedback>
                 </LinearGradient>
             </View>
