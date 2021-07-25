@@ -117,7 +117,7 @@ export default function registerPage({ navigation }) {
     }
 
     const handleErrors = (err)=> {
-        switch(err.)
+       switch(err.id){}
     }
 
     return (
