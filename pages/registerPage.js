@@ -81,7 +81,7 @@ export default function registerPage({ navigation }) {
     const [age, setAge] = useState(2)
     const [fam_ID, setFamID] = useState('');
     const [has_family, setHasFamily] = useState(false)
-    const [errors, setErrors] = useState({ username: "", password: "", re_pass: "" })
+    const [errors, setErrors] = useState({ username: "", password: "", re_pass: "",email:"", isOK:false})
 
     const [user, SetUser] = useState('');
     const [family, setFamily] = useState('');
@@ -101,7 +101,7 @@ export default function registerPage({ navigation }) {
             password,
             name,
             age,
-            fam_ID,
+            email
         };
 
         let url_get_user = "http://ruppinmobile.tempdomain.co.il/site09/api/User/" + user.username;
@@ -141,14 +141,22 @@ export default function registerPage({ navigation }) {
                 }
                 else
                     setErrors({ username: "" })
-                break;
+                return;
             case 'password':
                 console.log(errors.password);
+                password.length < 6 ?setErrors({ password: "Password must containe at least 6 digits." }):setErrors({ password: "" });
+                    return;
                 if (password.length < 6)
                     setErrors({ password: "Password must containe at least 6 digits." })
                 else
                     setErrors({ password: "" })
                 return;
+            case 'email':
+                e = email.split('@');
+                e.count < 2 ? setErrors({email:"Invalid Email."}):setErrors({email:""})
+                return;
+                     
+
 
 
             // username.length < 4?setErrors({username:"Username must be aleast 4 letter."}):setErrors({username:""})   
