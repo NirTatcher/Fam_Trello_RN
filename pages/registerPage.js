@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, Button, StyleSheet, TouchableOpacity, Dimensions, Touchable, Keyboard } from 'react-native'
+import { View, Text, Button, StyleSheet, TouchableOpacity, Dimensions, Touchable, Keyboard, Pressable } from 'react-native'
 import { TextInput } from 'react-native-paper'
 import { linear } from 'react-native/Libraries/Animated/src/Easing'
 import { LinearGradient } from 'expo-linear-gradient';
 import { Switch } from 'react-native-elements';
 import { I18nManager } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import EntIcon from 'react-native-vector-icons/Entypo';
 import { Input } from 'react-native-elements';
 import { error } from 'jquery';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 
 const classes = StyleSheet.create(
@@ -19,43 +20,53 @@ const classes = StyleSheet.create(
             textAlign: 'center', // <-- The magic
         }
         , inner_warpper: {
-            width: Dimensions.get("window").width * 0.8,
-            height: Dimensions.get("window").height,
+            width: Dimensions.get("window").width * 0.9,
+            height: Dimensions.get("window").height*0.9,
             alignSelf: 'center',
 
         },
         container: {
-            backgroundColor: "grey",
             borderRadius: 10
         },
         title: {
+            alignSelf:"center",
             fontSize: 25,
-            marginBottom: 40
+            margin: 30,
+            fontFamily:"sans-serif-condensed"
         },
-        input: {
-            backgroundColor: 'transparent',
-            color: 'black', // <-- The magic
-            textAlign: 'auto', // <-- The magic
-            width: Dimensions.get("window").width * 0.35,
-            margin: 2,
-            alignSelf: "center"
-        },
+        // input: {
+        //     backgroundColor: 'transparent',
+        //     color: 'black', // <-- The magic
+        //     textAlign: 'auto', // <-- The magic
+        //     width: Dimensions.get("window").width * 0.35,
+        //     margin: 2,
+        //     padding:4,
+        //     alignSelf: "center"
+        // },
         inputWrapper: {
             flexDirection: "row",
-            backgroundColor: 'rgba(181, 214, 214,0.3)',
             textAlign: 'center', // <-- The magic
-            width: Dimensions.get("window").width * 0.8,
+            width: Dimensions.get("window").width * 0.9,
             flexWrap: "wrap",
             justifyContent: "space-evenly",
             borderRadius: 10
         },
         Btn: {
-            backgroundColor: 'red',
+            margin:5,
+            backgroundColor:'#b5d6d6',
+            borderRadius:7,
+            borderRightColor:"#3D5467",
+            borderRightWidth:2,
+            borderTopRightRadius:10,
+            borderBottomWidth:3,
+            borderBottomColor:"#3D5467"
         },
-        BtnText: {
-            color: 'blue',
-            textAlign: 'center'
+        BtbText:{
+            padding:7,
+            fontSize:20,
+            fontFamily:'notoserif'
         }
+
 
     }
 )
@@ -65,11 +76,12 @@ export default function registerPage({ navigation }) {
     const [username, setUsername] = useState("david22");
     const [password, setPass] = useState("");
     const [rePassword, setRePass] = useState("");
-    const [first_name, setFisrtName] = useState('')
+    const [email, setEmail] = useState("");
+    const [name, setName] = useState('')
     const [age, setAge] = useState(2)
     const [fam_ID, setFamID] = useState('');
     const [has_family, setHasFamily] = useState(false)
-    const [errors, setErrors] = useState({ username: "", password: "", pass_warning:true, re_pass: "" })
+    const [errors, setErrors] = useState({ username: "", password: "", re_pass: "" })
 
     const [user, SetUser] = useState('');
     const [family, setFamily] = useState('');
@@ -87,7 +99,7 @@ export default function registerPage({ navigation }) {
         let user = {
             username,
             password,
-            first_name,
+            name,
             age,
             fam_ID,
         };
@@ -120,7 +132,7 @@ export default function registerPage({ navigation }) {
         switch (field) {
             case 'username':
                 if (username.length < 4) {
-                    setErrors({ username: "Username must be aleast 4 letter." })
+                    setErrors({ username: "Username must be at least 4 letter." })
                     return;
                 }
                 else if (username.match(/\d+/g) === null) {
@@ -133,9 +145,9 @@ export default function registerPage({ navigation }) {
             case 'password':
                 console.log(errors.password);
                 if (password.length < 6)
-                    setErrors({ password: "Password must containe at least 6 digits." ,pass_warning:false})
+                    setErrors({ password: "Password must containe at least 6 digits." })
                 else
-                    setErrors({ password: "" ,pass_warning:false})  
+                    setErrors({ password: "" })
                 return;
 
 
@@ -150,18 +162,20 @@ export default function registerPage({ navigation }) {
         <View>
             <View style={classes.Wrapper}>
                 <LinearGradient
-                    end={{ x: 0.4, y: 0.9 }}
-                    locations={[0.1, 0.97]}
-                    colors={['rgb(240, 101, 67)', 'rgb(238, 148, 128)']} // Background Linear Gradient
+                    end={{ x: 0.0, y: 0.7 }}
+                    locations={[0.1, 0.8]}
+                    colors={['rgb(131, 197, 190)', 'rgb(248, 249, 250)']} // Background Linear Gradient
                 >
-                    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} >
+                    <ScrollView onPress={Keyboard.dismiss} accessible={false} >
                         <Text style={classes.title}>Welcome,</Text>
                         <View style={classes.inner_warpper}>
                             <View style={classes.inputWrapper}>
 
                                 <Input
+                                    containerStyle={{borderColor:"black",shadowColor:"black"}}
+                                    inputStyle={{color:"black",textShadowColor:"black"}}
                                     leftIcon={
-                                        <Icon
+                                        <EntIcon
                                             name='user'
                                             size={20}
                                             color='black'
@@ -169,7 +183,7 @@ export default function registerPage({ navigation }) {
                                     }
                                     label="Username"
                                     labelStyle={{ color: "black" }}
-                                    errorStyle={{ color:"red"}}
+                                    errorStyle={{ color: "red" }}
                                     errorMessage={errors.username}
                                     placeholder='Username'
                                     onChangeText={setUsername}
@@ -177,7 +191,23 @@ export default function registerPage({ navigation }) {
                                 />
                                 <Input
                                     leftIcon={
-                                        <Icon
+                                        <EntIcon
+                                            name='info'
+                                            size={20}
+                                            color='black'
+                                        />
+                                    }
+                                    label="Name"
+                                    labelStyle={{ color: "black" }}
+                                    errorStyle={{ color: "red" }}
+                                    errorMessage={errors.name}
+                                    placeholder='Name'
+                                    onChangeText={setName}
+                                    onBlur={(e) => ErrHandler('name')}
+                                />
+                                <Input
+                                    leftIcon={
+                                        <EntIcon
                                             name='lock'
                                             size={20}
                                             color='black'
@@ -185,28 +215,64 @@ export default function registerPage({ navigation }) {
                                     }
                                     label="Password"
                                     labelStyle={{ color: "black" }}
-                                    errorStyle={(errors.pass_warning === true?{color:"yellow"}:{color:"red"})}
+                                    errorStyle={{ color: "red" }}
                                     errorMessage={errors.password}
                                     placeholder='Password'
                                     secureTextEntry={true}
                                     onChangeText={setPass}
                                     onBlur={(e) => ErrHandler('password')}
                                 />
-                                {/* <Text style={classes.input}>enter username</Text>
-                            <TextInput style={classes.input} onChangeText={setUsername}></TextInput>
-                            <Text style={classes.input}>enter password</Text>
-                            <TextInput style={classes.input} ></TextInput> */}
-                                <Button
-                                    style={classes.input}
-                                    color="rgb(131, 128, 182)"
-                                    title="register"
-                                    onPress={() => console.log("b")} />
+                                <Input
+                                    leftIcon={
+                                        <EntIcon
+                                            name='lock-open'
+                                            size={20}
+                                            color='black'
+                                        />
+                                    }
+                                    label="Re-Password"
+                                    labelStyle={{ color: "black" }}
+                                    errorStyle={{ color: "red" }}
+                                    errorMessage={errors.re_pass}
+                                    placeholder='re-Password'
+                                    secureTextEntry={true}
+                                    onChangeText={setRePass}
+                                    onBlur={(e) => ErrHandler('re_pass')}
+                                />
+                                <Input
+                                    leftIcon={
+                                        <EntIcon
+                                            name='email'
+                                            size={20}
+                                            color='black'
+                                        />
+                                    }
+                                    label="Email"
+                                    labelStyle={{ color: "black" }}
+                                    errorStyle={{ color: "red" }}
+                                    errorMessage={errors.email}
+                                    placeholder='Email'
+                                    secureTextEntry={true}
+                                    onChangeText={setEmail}
+                                    onBlur={(e) => ErrHandler('email')}
+                                />
+                                <View
+                                style={{width:Dimensions.get("window").width*0.8,justifyContent:"flex-start",alignItems:"center",flexDirection:"row"}}>
+                                    <Text style={{marginRight:10,fontSize:20}}>Enter Age:</Text>
+                                    <TextInput
+                                    
+                                    keyboardType = 'numeric'
+                                    onChangeText={setAge}
+                                />
+                                </View>
+                                <Pressable
+                                style={classes.Btn}
+                                >
+                                    <Text style={classes.BtbText}>REGISTER</Text>
+                                </Pressable>
                             </View>
-
-
-
                         </View>
-                    </TouchableWithoutFeedback>
+                    </ScrollView>
                 </LinearGradient>
             </View>
         </View>
@@ -214,7 +280,7 @@ export default function registerPage({ navigation }) {
 }
 {/* <View style={classes.inputWrapper}>
                             <TextInput theme={{ colors: { primary: 'green', text: 'white', } }} placeholderTextColor='white' onChangeText={setUsername} style={classes.input} placeholder="Username"></TextInput>
-                            <TextInput secureTextEntry={true} placeholderTextColor='white' theme={{ colors: { primary: 'green', underline: 'none', underlineColor: 'transparent', text: 'white' } }} onChangeText={setFisrtName} style={classes.input} placeholder="Name"></TextInput>
+                            <TextInput secureTextEntry={true} placeholderTextColor='white' theme={{ colors: { primary: 'green', underline: 'none', underlineColor: 'transparent', text: 'white' } }} onChangeText={setName} style={classes.input} placeholder="Name"></TextInput>
                             <TextInput secureTextEntry={true} placeholderTextColor='white' theme={{ colors: { primary: 'black', underline: 'none', underlineColor: 'transparent', text: 'white' } }} onChangeText={setPass} style={classes.input} placeholder="Password"></TextInput>
                             <TextInput secureTextEntry={true} placeholderTextColor='white' theme={{ colors: { primary: 'green', underline: 'none', underlineColor: 'transparent', text: 'white' } }} onChangeText={setRePass} style={classes.input} placeholder="Re-Password"></TextInput>
                             <TextInput secureTextEntry={true} placeholderTextColor='white' theme={{ colors: { primary: 'green', underline: 'none', underlineColor: 'transparent', text: 'white' } }} onChangeText={setAge} style={classes.input} placeholder="Age"></TextInput>

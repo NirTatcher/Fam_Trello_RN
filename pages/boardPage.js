@@ -106,7 +106,7 @@ export default function boardPage({ navigation }) {
 
         }).then(
             res => {
-                console.log(res.ok)
+                
                 if (res.ok)
                     return res.json()
                 else
@@ -158,7 +158,7 @@ export default function boardPage({ navigation }) {
     }
     useEffect(() => {
 
-        I18nManager.allowRTL(true);
+        I18nManager.allowRTL(false);
         I18nManager.forceRTL(false);
         let urlFamNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/family/cohen222";
         let urlCurrentNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/fam_member/" + fam_ID + "/" + username;
@@ -194,15 +194,15 @@ export default function boardPage({ navigation }) {
 
         ).then(
             res => {
-                console.log(res)
+                
                 return res.json()
             }
         ).then(
             async (result) => {
-                console.log(result)
+                
             },
             (error) =>
-                console.log(error)
+                console.log("")
 
         )
         let notesCurrent = curret_user_notes
@@ -211,7 +211,7 @@ export default function boardPage({ navigation }) {
         notesFam.push(note)
         await setCurrentUserNotes(notesCurrent)
         await setFamNotes(notesFam)
-        console.log(notes.length + "xxxx")
+        
 
 
     }
@@ -230,7 +230,7 @@ export default function boardPage({ navigation }) {
     }, [fam_notes])
 
     const deleteNote = (id) => {
-        console.log(id)
+        
         let url = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/" + id;
 
         fetch(url,
@@ -244,12 +244,10 @@ export default function boardPage({ navigation }) {
 
         ).then(
             res => {
-                console.log(res.status)
                 return res.json()
             }
         ).then(
             (result) => {
-                console.log(result)
                 let fam_notes_temp = fam_notes
                 fam_notes_temp.filter(n => n.id !== id)
                 setFamNotes(fam_notes_temp)
@@ -293,15 +291,16 @@ export default function boardPage({ navigation }) {
                                     (<View key={i}>
 
                                         <TouchableOpacity key={i} onPress={() => toggleOverlay(i)}>
-                                            <ListItem key={i} bottomDivider>
-                                                <ListItem.Content >
-                                                    <ListItem.Title>{l.title} <Icon
+                                            <ListItem 
+                                            key={i} bottomDivider>
+                                                <ListItem.Content>
+                                                    <ListItem.Title>{l.title} 
+                                                    <Icon
                                                         name="edit"
                                                         color="black"
                                                         onPress={() => navigation.navigate("EditNote", { note: l })}
                                                     />
                                                         <Icon
-
                                                             onPress={() => deleteNote(l.id)}
                                                             name="delete"
                                                             color="black"
