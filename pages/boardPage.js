@@ -220,9 +220,18 @@ export default function boardPage({ navigation }) {
         fetchUsersNotes(urlCurrentNotes)
 
     }, [curret_user_notes])
+
+
+    
+    useEffect(() => {
+        let urlFamNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/family/cohen222";
+        fetchFamNotes(urlFamNotes)
+
+    }, [fam_notes])
+
     const deleteNote = (id) => {
         console.log(id)
-        let url = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/?id=" + id;
+        let url = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/" + id;
 
         fetch(url,
             {
@@ -240,7 +249,10 @@ export default function boardPage({ navigation }) {
             }
         ).then(
             (result) => {
-                alert("success")
+                console.log(result)
+                let fam_notes_temp = fam_notes
+                fam_notes_temp.filter(n => n.id !== id)
+                setFamNotes(fam_notes_temp)
             },
             (error) =>
                 alert(error)
@@ -256,7 +268,7 @@ export default function boardPage({ navigation }) {
     }
     return (
         <ScrollView>
-           
+
             <View style={styles.Wrapper}>
                 <LinearGradient
                     // Background Linear Gradient
@@ -286,7 +298,7 @@ export default function boardPage({ navigation }) {
                                                     <ListItem.Title>{l.title} <Icon
                                                         name="edit"
                                                         color="black"
-                                                        onPress={()=>navigation.navigate("EditNote",{note:l})}
+                                                        onPress={() => navigation.navigate("EditNote", { note: l })}
                                                     />
                                                         <Icon
 
