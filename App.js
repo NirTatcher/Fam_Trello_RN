@@ -17,6 +17,7 @@ import DrawerNavManager from './pages/DrawerNavManager';
 import TabNavManager from './pages/TabNavManager';
 import { I18nManager } from 'react-native';
 import AddNote from './pages/AddNote';
+import EditNote from './pages/EditNote';
 
 
 
@@ -65,7 +66,7 @@ export default function App() {
         <Stack.Screen name="Profile" component={ProfilePage} />
         <Stack.Screen name="Board" component={BoardPage} />
         <Stack.Screen name="AddNote" component={AddNote} />
-
+        <Stack.Screen name="EditNote" component={EditNote} />
         </Stack.Navigator>   
          </NavigationContainer>
 

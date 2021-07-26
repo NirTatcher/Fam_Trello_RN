@@ -11,6 +11,8 @@ import { Button, Overlay, Icon } from 'react-native-elements';
 import Note_Overlay from './Note_Overlay';
 import { Input } from 'react-native-elements/dist/input/Input';
 import { log } from 'react-native-reanimated';
+import { I18nManager } from 'react-native';
+
 // import $, { error } from 'jquery';
 const mock_user = {
     username: "Eldad22",
@@ -93,6 +95,8 @@ export default function boardPage({ navigation }) {
     const [current, setCurrent] = useState(0);
     const [fam_ID, setFamID] = useState("cohen222");
 
+
+
     const fetchFamNotes = (urlFamNotes) => {
         fetch(urlFamNotes, {
             method: 'GET',
@@ -152,16 +156,19 @@ export default function boardPage({ navigation }) {
             }
         )
     }
-    useEffect( () => {
+    useEffect(() => {
+
+        I18nManager.allowRTL(true);
+        I18nManager.forceRTL(false);
         let urlFamNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/family/cohen222";
         let urlCurrentNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/fam_member/" + fam_ID + "/" + username;
 
 
 
-          fetchFamNotes(urlFamNotes)
+        fetchFamNotes(urlFamNotes)
 
-          fetchUsersNotes(urlCurrentNotes)
-        return()=>{
+        fetchUsersNotes(urlCurrentNotes)
+        return () => {
             console.log("clean up");
         }
 
@@ -173,71 +180,71 @@ export default function boardPage({ navigation }) {
 
 
     const addingNote = async (note) => {
-  
-        
-        await fetch('http://ruppinmobile.tempdomain.co.il/site09/api/Note/',
-        {
-            method:'POST',
-            body:JSON.stringify(note),
-            headers:new Headers({
-                'Content-type':'application/json; charset=UTF-8'
-            })
 
-        }
-       
+
+        await fetch('http://ruppinmobile.tempdomain.co.il/site09/api/Note/',
+            {
+                method: 'POST',
+                body: JSON.stringify(note),
+                headers: new Headers({
+                    'Content-type': 'application/json; charset=UTF-8'
+                })
+
+            }
+
         ).then(
-            res=>{
+            res => {
                 console.log(res)
                 return res.json()
             }
         ).then(
-           async (result)=>{
-              console.log(result)
+            async (result) => {
+                console.log(result)
             },
-            (error)=>
+            (error) =>
                 console.log(error)
-            
+
         )
-    let notesCurrent = curret_user_notes
-    let notesFam = fam_notes
-    notesCurrent.push(note)
-    notesFam.push(note)
-   await setCurrentUserNotes(notesCurrent)
-   await setFamNotes(notesFam)
-    console.log(notes.length +"xxxx")
-        
-    
+        let notesCurrent = curret_user_notes
+        let notesFam = fam_notes
+        notesCurrent.push(note)
+        notesFam.push(note)
+        await setCurrentUserNotes(notesCurrent)
+        await setFamNotes(notesFam)
+        console.log(notes.length + "xxxx")
+
+
     }
     useEffect(() => {
         let urlCurrentNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/fam_member/" + fam_ID + "/" + username;
         fetchUsersNotes(urlCurrentNotes)
-     
+
     }, [curret_user_notes])
-    const deleteNote=(id)=>{
+    const deleteNote = (id) => {
         console.log(id)
-        let url = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/"+id;
+        let url = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/?id=" + id;
 
-                 fetch(url,
-        {
-            method:'DELETE',
-            // headers:new Headers({
-            //     'Content-type':'application/json; charset=UTF-8'
-            // })
+        fetch(url,
+            {
+                method: 'DELETE',
+                headers: new Headers({
+                    'accept': 'application/json; charset=UTF-8'
+                })
 
-        }
-       
+            }
+
         ).then(
-            res=>{
+            res => {
                 console.log(res.status)
                 return res.json()
             }
         ).then(
-            (result)=>{
-              alert("success")
+            (result) => {
+                alert("success")
             },
-            (error)=>
+            (error) =>
                 alert(error)
-            
+
         )
     }
     const toggleOverlay = (e) => {
@@ -249,6 +256,7 @@ export default function boardPage({ navigation }) {
     }
     return (
         <ScrollView>
+           
             <View style={styles.Wrapper}>
                 <LinearGradient
                     // Background Linear Gradient
@@ -274,18 +282,18 @@ export default function boardPage({ navigation }) {
 
                                         <TouchableOpacity key={i} onPress={() => toggleOverlay(i)}>
                                             <ListItem key={i} bottomDivider>
-                                                <ListItem.Content>
-
+                                                <ListItem.Content >
                                                     <ListItem.Title>{l.title} <Icon
                                                         name="edit"
                                                         color="black"
+                                                        onPress={()=>navigation.navigate("EditNote",{note:l})}
                                                     />
-                                                    <Icon
-                                                    
-                                                    onPress={()=>deleteNote(l.id)}
-                                                        name="delete"
-                                                        color="black"
-                                                    />
+                                                        <Icon
+
+                                                            onPress={() => deleteNote(l.id)}
+                                                            name="delete"
+                                                            color="black"
+                                                        />
                                                     </ListItem.Title>
                                                     <ListItem.Subtitle>{l.text}</ListItem.Subtitle>
                                                     <ListItem.Subtitle>{l.users_tagged}</ListItem.Subtitle>
