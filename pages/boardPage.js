@@ -80,7 +80,6 @@ const notes = [
 
 
 const func1 = (res) => {
-    console.log(res.ok)
     if (res.ok)
         return res.json()
     else
@@ -153,16 +152,18 @@ export default function boardPage({ navigation }) {
             }
         )
     }
-    useEffect(async () => {
+    useEffect( () => {
         let urlFamNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/family/cohen222";
         let urlCurrentNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/fam_member/" + fam_ID + "/" + username;
 
 
 
-        await fetchFamNotes(urlFamNotes)
+          fetchFamNotes(urlFamNotes)
 
-        await fetchUsersNotes(urlCurrentNotes)
-
+          fetchUsersNotes(urlCurrentNotes)
+        return()=>{
+            console.log("clean up");
+        }
 
 
     }, [])
@@ -197,17 +198,49 @@ export default function boardPage({ navigation }) {
                 console.log(error)
             
         )
-
+    let notesCurrent = curret_user_notes
+    let notesFam = fam_notes
+    notesCurrent.push(note)
+    notesFam.push(note)
+   await setCurrentUserNotes(notesCurrent)
+   await setFamNotes(notesFam)
+    console.log(notes.length +"xxxx")
         
     
     }
-    // useEffect(async() => {
-    //     let urlCurrentNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/fam_member/" + fam_ID + "/" + username;
-    //    await fetchUsersNotes(urlCurrentNotes)
+    useEffect(() => {
+        let urlCurrentNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/fam_member/" + fam_ID + "/" + username;
+        fetchUsersNotes(urlCurrentNotes)
      
-    // }, [curret_user_notes])
+    }, [curret_user_notes])
+    const deleteNote=(id)=>{
+        console.log(id)
+        let url = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/"+id;
+
+                 fetch(url,
+        {
+            method:'DELETE',
+            // headers:new Headers({
+            //     'Content-type':'application/json; charset=UTF-8'
+            // })
+
+        }
+       
+        ).then(
+            res=>{
+                console.log(res.status)
+                return res.json()
+            }
+        ).then(
+            (result)=>{
+              alert("success")
+            },
+            (error)=>
+                alert(error)
+            
+        )
+    }
     const toggleOverlay = (e) => {
-        console.log(e)
         if (visible === false)
             setCurrent(e)
         else
@@ -236,7 +269,7 @@ export default function boardPage({ navigation }) {
                         {
                             fam_notes?.map((l, i) =>
                                 // notes.map((l, i) =>0
-                                curret_user_notes.find(n => n.title === l.title) !== undefined ?
+                                curret_user_notes?.find(n => n.title === l.title) !== undefined ?
                                     (<View key={i}>
 
                                         <TouchableOpacity key={i} onPress={() => toggleOverlay(i)}>
@@ -246,7 +279,14 @@ export default function boardPage({ navigation }) {
                                                     <ListItem.Title>{l.title} <Icon
                                                         name="edit"
                                                         color="black"
-                                                    /></ListItem.Title>
+                                                    />
+                                                    <Icon
+                                                    
+                                                    onPress={()=>deleteNote(l.id)}
+                                                        name="delete"
+                                                        color="black"
+                                                    />
+                                                    </ListItem.Title>
                                                     <ListItem.Subtitle>{l.text}</ListItem.Subtitle>
                                                     <ListItem.Subtitle>{l.users_tagged}</ListItem.Subtitle>
 
@@ -258,7 +298,6 @@ export default function boardPage({ navigation }) {
                                     </View>)
                                     :
                                     (<View key={i}>
-                                        {console.log(l.created)}
                                         <TouchableOpacity key={i} onPress={() => toggleOverlay(i)}>
                                             <ListItem key={i} bottomDivider>
                                                 {/* <Avatar source={{ uri: l.avatar_url }} /> */}
