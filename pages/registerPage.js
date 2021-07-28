@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, Button, StyleSheet, TouchableOpacity, Dimensions, Touchable, Keyboard, Pressable } from 'react-native'
+import { ToastAndroid, View, Text, Button, StyleSheet, TouchableOpacity, Dimensions, Touchable, Keyboard, Pressable } from 'react-native'
 import { TextInput } from 'react-native-paper'
 import { linear } from 'react-native/Libraries/Animated/src/Easing'
 import { LinearGradient } from 'expo-linear-gradient';
@@ -20,7 +20,7 @@ const classes = StyleSheet.create(
         }
         , inner_warpper: {
             width: Dimensions.get("window").width * 0.9,
-            height: Dimensions.get("window").height*0.9,
+            height: Dimensions.get("window").height * 0.9,
             alignSelf: 'center',
 
         },
@@ -28,10 +28,10 @@ const classes = StyleSheet.create(
             borderRadius: 10
         },
         title: {
-            alignSelf:"center",
+            alignSelf: "center",
             fontSize: 25,
             margin: 30,
-            fontFamily:"sans-serif-condensed"
+            fontFamily: "sans-serif-condensed"
         },
         // input: {
         //     backgroundColor: 'transparent',
@@ -51,19 +51,19 @@ const classes = StyleSheet.create(
             borderRadius: 10
         },
         Btn: {
-            margin:5,
-            backgroundColor:'#b5d6d6',
-            borderRadius:7,
-            borderRightColor:"#3D5467",
-            borderRightWidth:2,
-            borderTopRightRadius:10,
-            borderBottomWidth:3,
-            borderBottomColor:"#3D5467"
+            margin: 5,
+            backgroundColor: '#b5d6d6',
+            borderRadius: 7,
+            borderRightColor: "#3D5467",
+            borderRightWidth: 2,
+            borderTopRightRadius: 10,
+            borderBottomWidth: 3,
+            borderBottomColor: "#3D5467"
         },
-        BtbText:{
-            padding:7,
-            fontSize:20,
-            fontFamily:'notoserif'
+        BtbText: {
+            padding: 7,
+            fontSize: 20,
+            fontFamily: 'notoserif'
         }
 
 
@@ -74,13 +74,13 @@ const classes = StyleSheet.create(
 export default function registerPage({ navigation }) {
     const [username, setUsername] = useState("david22");
     const [password, setPass] = useState("");
-    const [rePassword, setRePass] = useState("");
+    const [re_pass, setRePass] = useState("");
     const [email, setEmail] = useState("");
-    const [name, setName] = useState('')
+    const [first_name, setfirst_name] = useState('')
     const [age, setAge] = useState(2)
     const [fam_ID, setFamID] = useState('');
     const [has_family, setHasFamily] = useState(false)
-    const [errors, setErrors] = useState({ username: "", password: "", re_pass: "", email:"", age:"", isOK:false})
+    const [errors, setErrors] = useState({ username: "", password: "", re_pass: "", email: "", age: ""})
 
     const [user, SetUser] = useState('');
     const [family, setFamily] = useState('');
@@ -88,28 +88,34 @@ export default function registerPage({ navigation }) {
     I18nManager.allowRTL(false);
     I18nManager.forceRTL(false);
 
-    useEffect(() => {
-        console.log(username);
-    }, [username])
     async function SendForm() {
+        
 
-        // if()
-
+        for (let [key, value] of Object.entries(errors)) {
+            if(value != ""){
+                console.log(key+" : " +value);
+                ToastAndroid.show(value,ToastAndroid.LONG)
+                return;
+            }
+        }
+        
         let user = {
             username,
             password,
-            name,
+            first_name,
             age,
             email
         };
 
-        let url_get_user = "http://ruppinmobile.tempdomain.co.il/site09/api/User/" + user.username;
+        let url_get_user = "http://ruppinmobile.tempdomain.co.il/site09/api/User/";
 
         await fetch(url_get_user, {
-            method: 'GET',
+            method: 'POST',
             headers: new Headers({
+                'Accept': 'application/json; charset=utf8',
                 'Content-Type': 'application/json; charset=utf8',
             })
+            , body: JSON.stringify()
 
         }).then(
             res => {
@@ -127,30 +133,46 @@ export default function registerPage({ navigation }) {
     }
 
     const ErrHandler = (field) => {
-        console.log(field);
-        setErrors({isOK:true})
+        let err = errors;
         switch (field) {
             case 'username':
-                if (username.length < 4) {
-                    setErrors(errors,{ username: "Username must be at least 4 letter.",isOK:false })
+                if (username.length < 5) {
+                    err.username = "Username must be at least 4 letter.";
                 }
                 else if (username.match(/\d+/g) === null) {
-                    setErrors(errors,{ username: "Username must contain at least 1 digit.",isOK:false })  
+                    err.username = "Username must contain at least 1 digit.";
                 }
                 else
-                    setErrors(errors,{ username: ""})
+                    err.username = "";
                 break;
             case 'password':
-                password.length < 6?setErrors(errors,{ password: "Password must containe at least 6 digits.",isOK:false }):setErrors(errors,{ password: "" })
+                if (password.length < 6) {
+                    err.password = "Password must containe at least 6 digits.";
+                }
+                else
+                    err.password = "";
                 break;
+            case 're_pass':
+                if (re_pass != password) {
+                    err.re_pass = "passwords dont match"
+                }
+                else
+                    err.re_pass = "";
             case 'email':
-                e = email.split('@');
-                e.count < 2 ? setErrors(errors,{email:"Invalid Email.",isOK:false}):setErrors(errors,{email:""})
+                let e = email.split('@');
+                if (e.count < 2) {
+                    err.email = "Invalid Email.";
+                }
+                else err.email = "";
                 break;
             case 'age':
-                !(age > 0 && age > 110)?setErrors(errors,{age:"invalid age",isOK:false}):setErrors(errors,{age:""})
+                if (!(age > 0 && age > 110)) {
+                    err.age = "invalid age";
+                }
+                else err.age = ""
                 break;
         }
+        setErrors(err);
     }
 
     return (
@@ -167,8 +189,8 @@ export default function registerPage({ navigation }) {
                             <View style={classes.inputWrapper}>
 
                                 <Input
-                                    containerStyle={{borderColor:"black",shadowColor:"black"}}
-                                    inputStyle={{color:"black",textShadowColor:"black"}}
+                                    containerStyle={{ borderColor: "black", shadowColor: "black" }}
+                                    inputStyle={{ color: "black", textShadowColor: "black" }}
                                     leftIcon={
                                         <EntIcon
                                             name='user'
@@ -197,8 +219,8 @@ export default function registerPage({ navigation }) {
                                     errorStyle={{ color: "red" }}
                                     errorMessage={errors.name}
                                     placeholder='Name'
-                                    onChangeText={setName}
-                                    onBlur={(e) => ErrHandler('name')}
+                                    onChangeText={setfirst_name}
+                                    onBlur={(e) => ErrHandler('first_name')}
                                 />
                                 <Input
                                     leftIcon={
@@ -252,18 +274,18 @@ export default function registerPage({ navigation }) {
                                     onBlur={(e) => ErrHandler('email')}
                                 />
                                 <View
-                                style={{width:Dimensions.get("window").width*0.8,justifyContent:"flex-start",alignItems:"center",flexDirection:"row"}}>
-                                    <Text style={{marginRight:10,fontSize:20}}>Enter Age:</Text>
+                                    style={{ width: Dimensions.get("window").width * 0.8, justifyContent: "flex-start", alignItems: "center", flexDirection: "row" }}>
+                                    <Text style={{ marginRight: 10, fontSize: 20 }}>Enter Age:</Text>
                                     <TextInput
-                                    
-                                    keyboardType = 'numeric'
-                                    onChangeText={setAge}
-                                    onBlur={(e) => ErrHandler('age')}
-                                />
+
+                                        keyboardType='numeric'
+                                        onChangeText={setAge}
+                                        onBlur={(e) => ErrHandler('age')}
+                                    />
                                 </View>
                                 <Pressable
-                                disabled={errors.isOK}
-                                style={classes.Btn}
+                                    style={classes.Btn}
+                                    onPress={SendForm}
                                 >
                                     <Text style={classes.BtbText}>REGISTER</Text>
                                 </Pressable>
@@ -275,28 +297,31 @@ export default function registerPage({ navigation }) {
         </View>
     )
 }
-{/* <View style={classes.inputWrapper}>
-                            <TextInput theme={{ colors: { primary: 'green', text: 'white', } }} placeholderTextColor='white' onChangeText={setUsername} style={classes.input} placeholder="Username"></TextInput>
-                            <TextInput secureTextEntry={true} placeholderTextColor='white' theme={{ colors: { primary: 'green', underline: 'none', underlineColor: 'transparent', text: 'white' } }} onChangeText={setName} style={classes.input} placeholder="Name"></TextInput>
-                            <TextInput secureTextEntry={true} placeholderTextColor='white' theme={{ colors: { primary: 'black', underline: 'none', underlineColor: 'transparent', text: 'white' } }} onChangeText={setPass} style={classes.input} placeholder="Password"></TextInput>
-                            <TextInput secureTextEntry={true} placeholderTextColor='white' theme={{ colors: { primary: 'green', underline: 'none', underlineColor: 'transparent', text: 'white' } }} onChangeText={setRePass} style={classes.input} placeholder="Re-Password"></TextInput>
-                            <TextInput secureTextEntry={true} placeholderTextColor='white' theme={{ colors: { primary: 'green', underline: 'none', underlineColor: 'transparent', text: 'white' } }} onChangeText={setAge} style={classes.input} placeholder="Age"></TextInput>
-                        </View> */}
-{/* <View style={{flexDirection: "row", justifyContent: "flex-end" }}>
-                            <Text>Join to A family?</Text>
-                            <Switch
-                                // style={{alignSelf:"center"}}
-                                onValueChange={() => setHasFamily(!has_family)}
-                                value={has_family} />
-                        </View>
-                        <View style={classes.family_container}>
-                            <View style={has_family == true?{display:"flex"}:{display:"none"}} >
-                                <TextInput placeholder ="insert family ID"></TextInput>
-                            </View>
-                        </View> */}
-{/* <TouchableOpacity
-                            onPress ={()=>console.log(ValidateUser())}
-                            style={classes.Btn}>
-
-                            <Text style={classes.BtnText}>123</Text>
-                        </TouchableOpacity> */}
+// const ErrHandler = (field) => {
+//     console.log(field);
+//     setErrors({isOK:true})
+//     switch (field) {
+//         case 'username':
+//             if (username.length < 4) {
+//                 setErrors(prev=>{ username: "Username must be at least 4 letter.",isOK:false })
+//             }
+//             else if (username.match(/\d+/g) === null) {
+//                 setErrors(errors,{ username: "Username must contain at least 1 digit.",isOK:false })  
+//             }
+//             else
+//                 setErrors(errors,{ username: ""})
+//             break;
+//         case 'password':
+//             password.length < 6?setErrors(errors,{ password: "Password must containe at least 6 digits.",isOK:false }):setErrors(errors,{ password: "" })
+//             break;
+//         case 're_pass':
+//             re_pass != password?setErrors(errors,{re_pass:"passwords dont match",isOK:false}):setErrors(errors,{re_pass:""})
+//         case 'email':
+//             e = email.split('@');
+//             e.count < 2 ? setErrors(errors,{email:"Invalid Email.",isOK:false}):setErrors(errors,{email:""})
+//             break;
+//         case 'age':
+//             !(age > 0 && age > 110)?setErrors(errors,{age:"invalid age",isOK:false}):setErrors(errors,{age:""})
+//             break;
+//     }
+// }
