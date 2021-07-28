@@ -8,7 +8,6 @@ import { I18nManager } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import EntIcon from 'react-native-vector-icons/Entypo';
 import { Input } from 'react-native-elements';
-import { error } from 'jquery';
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 
@@ -81,7 +80,7 @@ export default function registerPage({ navigation }) {
     const [age, setAge] = useState(2)
     const [fam_ID, setFamID] = useState('');
     const [has_family, setHasFamily] = useState(false)
-    const [errors, setErrors] = useState({ username: "", password: "", re_pass: "",email:"", isOK:false})
+    const [errors, setErrors] = useState({ username: "", password: "", re_pass: "", email:"", age:"", isOK:false})
 
     const [user, SetUser] = useState('');
     const [family, setFamily] = useState('');
@@ -129,40 +128,28 @@ export default function registerPage({ navigation }) {
 
     const ErrHandler = (field) => {
         console.log(field);
+        setErrors({isOK:true})
         switch (field) {
             case 'username':
                 if (username.length < 4) {
-                    setErrors({ username: "Username must be at least 4 letter." })
-                    return;
+                    setErrors(errors,{ username: "Username must be at least 4 letter.",isOK:false })
                 }
                 else if (username.match(/\d+/g) === null) {
-                    setErrors({ username: "Username must contain at least 1 digit." })
-                    return;
+                    setErrors(errors,{ username: "Username must contain at least 1 digit.",isOK:false })  
                 }
                 else
-                    setErrors({ username: "" })
-                return;
+                    setErrors(errors,{ username: ""})
+                break;
             case 'password':
-                console.log(errors.password);
-                password.length < 6 ?setErrors({ password: "Password must containe at least 6 digits." }):setErrors({ password: "" });
-                    return;
-                if (password.length < 6)
-                    setErrors({ password: "Password must containe at least 6 digits." })
-                else
-                    setErrors({ password: "" })
-                return;
+                password.length < 6?setErrors(errors,{ password: "Password must containe at least 6 digits.",isOK:false }):setErrors(errors,{ password: "" })
+                break;
             case 'email':
                 e = email.split('@');
-                e.count < 2 ? setErrors({email:"Invalid Email."}):setErrors({email:""})
-                return;
-                     
-
-
-
-            // username.length < 4?setErrors({username:"Username must be aleast 4 letter."}):setErrors({username:""})   
-            // username.match(/\d+/g) === null?setErrors({username:"Username must contain at least 1 digit."}):setErrors({username:""})
-
-
+                e.count < 2 ? setErrors(errors,{email:"Invalid Email.",isOK:false}):setErrors(errors,{email:""})
+                break;
+            case 'age':
+                !(age > 0 && age > 110)?setErrors(errors,{age:"invalid age",isOK:false}):setErrors(errors,{age:""})
+                break;
         }
     }
 
@@ -170,8 +157,8 @@ export default function registerPage({ navigation }) {
         <View>
             <View style={classes.Wrapper}>
                 <LinearGradient
-                    end={{ x: 0.0, y: 0.7 }}
-                    locations={[0.1, 0.8]}
+                    end={{ x: 0.7, y: 1 }}
+                    locations={[0.8, 1]}
                     colors={['rgb(131, 197, 190)', 'rgb(248, 249, 250)']} // Background Linear Gradient
                 >
                     <ScrollView onPress={Keyboard.dismiss} accessible={false} >
@@ -271,9 +258,11 @@ export default function registerPage({ navigation }) {
                                     
                                     keyboardType = 'numeric'
                                     onChangeText={setAge}
+                                    onBlur={(e) => ErrHandler('age')}
                                 />
                                 </View>
                                 <Pressable
+                                disabled={errors.isOK}
                                 style={classes.Btn}
                                 >
                                     <Text style={classes.BtbText}>REGISTER</Text>
