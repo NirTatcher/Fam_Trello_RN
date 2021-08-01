@@ -9,6 +9,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import EntIcon from 'react-native-vector-icons/Entypo';
 import { Input } from 'react-native-elements';
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import * as SecureStore from 'expo-secure-store';
+import { Alert } from 'react-native';
 
 
 const classes = StyleSheet.create(
@@ -77,7 +79,7 @@ export default function registerPage({ navigation }) {
     const [re_pass, setRePass] = useState("");
     const [email, setEmail] = useState("");
     const [first_name, setfirst_name] = useState('')
-    const [age, setAge] = useState(2)
+    const [age, setAge] = useState("")
     const [fam_ID, setFamID] = useState('');
     const [has_family, setHasFamily] = useState(false)
     const [errors, setErrors] = useState({ username: "", password: "", re_pass: "", email: "", age: ""})
@@ -91,6 +93,15 @@ export default function registerPage({ navigation }) {
     async function SendForm() {
         
 
+
+        let user = {
+            username,
+            password,
+            first_name,
+            age,
+            email,
+            age
+        };
         for (let [key, value] of Object.entries(errors)) {
             if(value != ""){
                 console.log(key+" : " +value);
@@ -98,14 +109,12 @@ export default function registerPage({ navigation }) {
                 return;
             }
         }
-        
-        let user = {
-            username,
-            password,
-            first_name,
-            age,
-            email
-        };
+        for(let [key,value] of Object.entries(user)){
+            if(value == ""){
+                Alert.alert("Please fill " + key.toString());
+                return;
+            }
+        }
 
         let url_get_user = "http://ruppinmobile.tempdomain.co.il/site09/api/User/";
 
@@ -115,20 +124,23 @@ export default function registerPage({ navigation }) {
                 'Accept': 'application/json; charset=utf8',
                 'Content-Type': 'application/json; charset=utf8',
             })
-            , body: JSON.stringify()
+            , body: JSON.stringify(user)
 
         }).then(
             res => {
+                
                 console.log(res.status)//true
-                if (res.status !== 200) {
-                    console.log("we might have a problem.." + res.status);
+                if (res.status !== 201) {
+                    Alert.alert("we might have a problem.." + res.status);
                     return;
+                }
+                else{
+                    Alert.alert("Registartion Completed.")
+                    navigation.navigate("Login");
                 }
                 return res.json();
             }
         )
-
-        return user;
 
     }
 
@@ -136,17 +148,17 @@ export default function registerPage({ navigation }) {
         let err = errors;
         switch (field) {
             case 'username':
-                if (username.length < 5) {
-                    err.username = "Username must be at least 4 letter.";
+                if (username.length < 4) {
+                    err.username = "Username must contain at least 4 letters.";
                 }
                 else if (username.match(/\d+/g) === null) {
-                    err.username = "Username must contain at least 1 digit.";
+                    err.username = "Username must containe at least 1 digit.";
                 }
                 else
                     err.username = "";
                 break;
             case 'password':
-                if (password.length < 6) {
+                if (password.length < 5) {
                     err.password = "Password must containe at least 6 digits.";
                 }
                 else
@@ -155,6 +167,7 @@ export default function registerPage({ navigation }) {
             case 're_pass':
                 if (re_pass != password) {
                     err.re_pass = "passwords dont match"
+                    setRePass("");
                 }
                 else
                     err.re_pass = "";
@@ -166,7 +179,8 @@ export default function registerPage({ navigation }) {
                 else err.email = "";
                 break;
             case 'age':
-                if (!(age > 0 && age > 110)) {
+                if (age < 0 || age > 110) {
+                    console.log("err age "+age);
                     err.age = "invalid age";
                 }
                 else err.age = ""
@@ -269,7 +283,6 @@ export default function registerPage({ navigation }) {
                                     errorStyle={{ color: "red" }}
                                     errorMessage={errors.email}
                                     placeholder='Email'
-                                    secureTextEntry={true}
                                     onChangeText={setEmail}
                                     onBlur={(e) => ErrHandler('email')}
                                 />
@@ -297,31 +310,3 @@ export default function registerPage({ navigation }) {
         </View>
     )
 }
-// const ErrHandler = (field) => {
-//     console.log(field);
-//     setErrors({isOK:true})
-//     switch (field) {
-//         case 'username':
-//             if (username.length < 4) {
-//                 setErrors(prev=>{ username: "Username must be at least 4 letter.",isOK:false })
-//             }
-//             else if (username.match(/\d+/g) === null) {
-//                 setErrors(errors,{ username: "Username must contain at least 1 digit.",isOK:false })  
-//             }
-//             else
-//                 setErrors(errors,{ username: ""})
-//             break;
-//         case 'password':
-//             password.length < 6?setErrors(errors,{ password: "Password must containe at least 6 digits.",isOK:false }):setErrors(errors,{ password: "" })
-//             break;
-//         case 're_pass':
-//             re_pass != password?setErrors(errors,{re_pass:"passwords dont match",isOK:false}):setErrors(errors,{re_pass:""})
-//         case 'email':
-//             e = email.split('@');
-//             e.count < 2 ? setErrors(errors,{email:"Invalid Email.",isOK:false}):setErrors(errors,{email:""})
-//             break;
-//         case 'age':
-//             !(age > 0 && age > 110)?setErrors(errors,{age:"invalid age",isOK:false}):setErrors(errors,{age:""})
-//             break;
-//     }
-// }

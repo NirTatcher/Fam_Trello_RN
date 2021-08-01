@@ -106,7 +106,7 @@ export default function boardPage({ navigation }) {
 
         }).then(
             res => {
-                
+
                 if (res.ok)
                     return res.json()
                 else
@@ -194,12 +194,12 @@ export default function boardPage({ navigation }) {
 
         ).then(
             res => {
-                
+
                 return res.json()
             }
         ).then(
             async (result) => {
-                
+
             },
             (error) =>
                 console.log("")
@@ -211,7 +211,7 @@ export default function boardPage({ navigation }) {
         notesFam.push(note)
         await setCurrentUserNotes(notesCurrent)
         await setFamNotes(notesFam)
-        
+
 
 
     }
@@ -222,7 +222,7 @@ export default function boardPage({ navigation }) {
     }, [curret_user_notes])
 
 
-    
+
     useEffect(() => {
         let urlFamNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/family/cohen222";
         fetchFamNotes(urlFamNotes)
@@ -230,7 +230,7 @@ export default function boardPage({ navigation }) {
     }, [fam_notes])
 
     const deleteNote = (id) => {
-        
+
         let url = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/" + id;
 
         fetch(url,
@@ -282,6 +282,8 @@ export default function boardPage({ navigation }) {
     </View> */}
                     <View>
 
+                        <Button title="register" onPress={() => navigation.navigate('Register')}></Button>
+                        <Button title="login" onPress={() => navigation.navigate('Login')}></Button>
                         <Text>All Tasks</Text>
 
                         {
@@ -291,15 +293,15 @@ export default function boardPage({ navigation }) {
                                     (<View key={i}>
 
                                         <TouchableOpacity key={i} onPress={() => toggleOverlay(i)}>
-                                            <ListItem 
-                                            key={i} bottomDivider>
+                                            <ListItem
+                                                key={i} bottomDivider>
                                                 <ListItem.Content>
-                                                    <ListItem.Title>{l.title} 
-                                                    <Icon
-                                                        name="edit"
-                                                        color="black"
-                                                        onPress={() => navigation.navigate("EditNote", { note: l })}
-                                                    />
+                                                    <ListItem.Title>{l.title}
+                                                        <Icon
+                                                            name="edit"
+                                                            color="black"
+                                                            onPress={() => navigation.navigate("EditNote", { note: l })}
+                                                        />
                                                         <Icon
                                                             onPress={() => deleteNote(l.id)}
                                                             name="delete"
@@ -396,13 +398,11 @@ export default function boardPage({ navigation }) {
                         </View>
                     </TouchableOpacity>
                 </LinearGradient>
-                <Button onPress={() => navigation.navigate('Register')}></Button>
+
                 <Text>TOTOTTOTOTOTOT</Text>
 
                 <TouchableOpacity onPress={() => navigation.navigate('AddNote', { addingNote })}>
                     <Icon
-
-
                         name="add"
                         color="white"
                     />
