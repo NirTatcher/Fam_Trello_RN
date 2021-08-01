@@ -4,12 +4,21 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Dimensions } from 'react-native';
 import { Input } from 'react-native-elements';
 import { ToastAndroid } from 'react-native';
-
+import {
+    SafeAreaView,
+    SafeAreaProvider,
+    SafeAreaInsetsContext,
+    useSafeAreaInsets,
+    initialWindowMetrics,
+  } from 'react-native-safe-area-context';
 
 
 export default function loginPage({ navigation }) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [btn_pressed,setBtnPressed] = useState(false);
+
+    
 
     const [loginError, setLoginError] = useState("");
 
@@ -44,7 +53,7 @@ export default function loginPage({ navigation }) {
 
     }
     return (
-        <View >
+        <SafeAreaView >
             <LinearGradient
                 colors={['rgba(0,0,0,0.8)', 'transparent']}
             >
@@ -67,8 +76,10 @@ export default function loginPage({ navigation }) {
                         />
                     </View>
                     <Pressable
-                        style={styles.Btn}
-                        onPress={Login}
+                        style={[(btn_pressed?{borderBottomWidth: 0,borderRightWidth: 0}:{borderBottomWidth: 3,borderRightWidth: 2}),styles.Btn]}
+                        
+                        onTouchStart={()=>setBtnPressed(!btn_pressed)}
+                        onTouchEnd={()=>{setBtnPressed(!btn_pressed);Login()}}
                     >
                         <Text style={styles.BtnText}>REGISTER</Text>
                     </Pressable>
@@ -77,7 +88,7 @@ export default function loginPage({ navigation }) {
 
 
             </LinearGradient>
-        </View>
+        </SafeAreaView>
     )
 }
 
@@ -111,12 +122,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#b5d6d6',
         borderRadius: 7,
         borderRightColor: "#3D5467",
-        borderRightWidth: 2,
         borderTopRightRadius: 10,
-        borderBottomWidth: 3,
         borderBottomColor: "#3D5467"
     },
     BtnText: {
+        textAlign:'center',
         padding: 7,
         fontSize: 20,
         fontFamily: 'notoserif'

@@ -12,6 +12,13 @@ import Note_Overlay from './Note_Overlay';
 import { Input } from 'react-native-elements/dist/input/Input';
 import { log } from 'react-native-reanimated';
 import { I18nManager } from 'react-native';
+import {
+    SafeAreaView,
+    SafeAreaProvider,
+    SafeAreaInsetsContext,
+    useSafeAreaInsets,
+    initialWindowMetrics,
+  } from 'react-native-safe-area-context';
 
 // import $, { error } from 'jquery';
 const mock_user = {
@@ -265,6 +272,7 @@ export default function boardPage({ navigation }) {
         setVisible(!visible);
     }
     return (
+        <SafeAreaView>
         <ScrollView>
 
             <View style={styles.Wrapper}>
@@ -409,5 +417,6 @@ export default function boardPage({ navigation }) {
                 </TouchableOpacity>
             </View>
         </ScrollView>
+        </SafeAreaView>
     )
 }
