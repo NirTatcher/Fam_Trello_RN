@@ -22,6 +22,7 @@ import AllNotes from './pages/AllNotes';
 import DoneNotes from './pages/DoneNotes';
 import PedningNotes from './pages/PedningNotes'
 import ActiveNotes from './pages/ActiveNotes';
+import RegisterFamily from './pages/RegisterFamiliy';
 
 
 
@@ -68,6 +69,7 @@ export default function App() {
     screenOptions={{headerShown:false}}
      initialRouteName="Drawer">
         <Stack.Screen name="Register" component={RegisterPage} />
+        <Stack.Screen name="RegisterFamily" component={RegisterFamily} />
         <Stack.Screen name="Login" component={LoginPage} />
         <Stack.Screen name="Profile" component={ProfilePage} />
         <Stack.Screen name="Board" component={BoardPage} />
