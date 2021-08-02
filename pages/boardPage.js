@@ -102,7 +102,7 @@ export default function boardPage({ navigation }) {
     const [current, setCurrent] = useState(0);
     const [fam_ID, setFamID] = useState("cohen222");
 
-
+//Pending,Active,Done,All   
 
     const fetchFamNotes = (urlFamNotes) => {
         fetch(urlFamNotes, {

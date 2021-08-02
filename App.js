@@ -18,6 +18,10 @@ import TabNavManager from './pages/TabNavManager';
 import { I18nManager } from 'react-native';
 import AddNote from './pages/AddNote';
 import EditNote from './pages/EditNote';
+import AllNotes from './pages/AllNotes';
+import DoneNotes from './pages/DoneNotes';
+import PedningNotes from './pages/PedningNotes'
+import ActiveNotes from './pages/ActiveNotes';
 
 
 
@@ -62,13 +66,20 @@ export default function App() {
     <NavigationContainer>
     <Stack.Navigator
     screenOptions={{headerShown:false}}
-     initialRouteName="Board">
+     initialRouteName="Drawer">
         <Stack.Screen name="Register" component={RegisterPage} />
         <Stack.Screen name="Login" component={LoginPage} />
         <Stack.Screen name="Profile" component={ProfilePage} />
         <Stack.Screen name="Board" component={BoardPage} />
         <Stack.Screen name="AddNote" component={AddNote} />
         <Stack.Screen name="EditNote" component={EditNote} />
+        <Stack.Screen name="TabNav" component={TabNavManager} />
+        <Stack.Screen name="All" component={AllNotes} />
+        <Stack.Screen name="Pending" component={PedningNotes} />
+        <Stack.Screen name="Done" component={DoneNotes} />
+        <Stack.Screen name="Active" component={ActiveNotes} />
+        <Stack.Screen name="Drawer" component={DrawerNavManager} />
+
         </Stack.Navigator>   
          </NavigationContainer>
 
