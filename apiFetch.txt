@@ -5,6 +5,7 @@ NOTE Controller:
 	"api/Note/family/{fam_ID}",by family
 	"api/Note/fam_member/{fam_ID}/{username}"by family member
 	"api/Note/tagged/{note_ID}" get tagged users
+	"api/Note/status/{note_ID}" get note status
 	
 	POST:
 	"api/Note/"  data form body
@@ -12,6 +13,7 @@ NOTE Controller:
 	
 	PUT:(update)
 	"api/Note/"  data form body
+        "api/Note/status/{note_id}/{status}" change note status EX. ACTIVE PENDING COMPLETED DELETED
 	
 	DELETE:
 	"api/Note/{note_ID}"
@@ -24,6 +26,10 @@ FAMILY Controller:
 	POST:
 	"api/Family"  //AddFamily (from body)
 	"api/Family/member" //AddMember(from body)
+	"api/Family/approve" Approve member by admin
+	
+	PUT:
+	"api/Family/setAdmin/{isAdmin}" set OR unset admin User from body
 	
 	DELETE:
 	"api/Family" //Delete famMember (from body)
