@@ -21,6 +21,7 @@ export default function TabNavManager() {
             <Tab.Screen
                 name="Profle"
                 component={profilePage}
+                
                 options={{
                     tabBarLabel: 'Profile',
                     tabBarIcon: ({ color }) => (

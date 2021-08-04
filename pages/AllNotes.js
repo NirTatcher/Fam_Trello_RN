@@ -7,22 +7,22 @@ import Note_Overlay from './Note_Overlay';
 import AppLoading from 'expo-app-loading';
 
 
-export default function AllNotes({ props, route, navigation }) {
+export default function AllNotes({ route, navigation }) {
 
     const [visible, setVisible] = useState(false);
     const [current, setCurrent] = useState(0);
     const [fam_notes, setFamNotes] = useState(undefined)
-    const [curret_user_notes, setCurrentUserNotes] = useState([])
+    const [curret_user_notes, setCurrentUserNotes] = useState("")
 
     useEffect(() => {
-        // {  console.log(route.params.fam_notes)}
+    
         setFamNotes(route.params.fam)
-        // setFamNotes(route.params.curret_user_notes)
-        console.log(route.params.user);
-      setCurrentUserNotes(route.params.user)
-        // return () => {
-        //     cleanup
-        // }
+        setCurrentUserNotes(route.params.user)
+        return () => {
+           
+        // setFamNotes(route.params.fam)
+        // setCurrentUserNotes(route.params.user)
+        }
     }, [])
 
     // useEffect(() => {
@@ -35,7 +35,7 @@ export default function AllNotes({ props, route, navigation }) {
     //     //     cleanup
     //     // }
     // }, [fam_notes,curret_user_notes])
-    
+
 
     const toggleOverlay = (e) => {
         if (visible === false)
@@ -45,26 +45,38 @@ export default function AllNotes({ props, route, navigation }) {
         setVisible(!visible);
     }
 
+ const deleteNote = (id) => {
+        // let fam_notes_temp = [...fam_notes]
+        // let user_notes = [...curret_user_notes]
+        // user_notes.filter(n=>n.id !== id)
+        //  fam_notes_temp.filter(n => n.id !== id)
+        // await  setFamNotes([...fam_notes_temp])
+        // await setCurrentUserNotes([...user_notes])
+        console.log(id)
+        fam_notes_temp = fam_notes
+        fam_notes_temp.filter(i=>i.id===id)
+        setCurrentUserNotes(fam_notes_temp)
+    }
 
 
 
-
-    if (fam_notes === undefined || curret_user_notes===undefined) {
+    if (fam_notes === undefined || curret_user_notes === undefined) {
         return <AppLoading />
     }
     else
         return (
             <ScrollView>
                 <View>
+                 
                     <Text>All Notes</Text>
                     {/* {console.log(route.params.fam_notes)}
                 
                 {/* <Text>{route.params}</Text> */}
-                  
+
                     {
                         fam_notes?.map((l, i) =>
                             // notes.map((l, i) =>0
-                            curret_user_notes?.find(n => n.title === l.title) !== undefined ?
+                            curret_user_notes.Message==="notes wasnt found."?null: curret_user_notes.find(n => n.title === l.title) !== undefined ?
                                 (<View key={i}>
 
                                     <TouchableOpacity key={i} onPress={() => toggleOverlay(i)}>
@@ -78,14 +90,13 @@ export default function AllNotes({ props, route, navigation }) {
                                                         onPress={() => navigation.navigate("EditNote", { note: l })}
                                                     />
                                                     <Icon
-                                                        onPress={async() => 
+                                                        onPress={async () => {
+                                                           deleteNote(l.id)
+                                                            // route.params.delete(l.id)
                                                             
-                                                             
-                                                        {    
-                                                            // setFamNotes(fam_notes.filter(n => n.id !== id))
-                                                           route.params.delete(l.id)}
-                                                         
-                                                        
+                                                        }
+
+
                                                         }
                                                         name="delete"
                                                         color="black"
@@ -128,7 +139,7 @@ export default function AllNotes({ props, route, navigation }) {
 
                     </Overlay>
 
-
+                    <TouchableOpacity onPress={() => navigation.navigate('AddNote', (i) => { route.params.create(i) })}><Text>+</Text></TouchableOpacity>
 
                 </View>
             </ScrollView>

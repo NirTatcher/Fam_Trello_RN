@@ -46,11 +46,11 @@ export default function DrawerNavManager({route,navigation}) {
 
     }, [fam_notes])
 
-    const deleteNote = (id) => {
+    const deleteNote = async(id) => {
          console.log(id)
         let url = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/" + id;
 
-        fetch(url,
+       await fetch(url,
             {
                 method: 'DELETE',
                 headers: new Headers({
@@ -68,8 +68,11 @@ export default function DrawerNavManager({route,navigation}) {
            async (result) => {
                 alert("Success")
                 let fam_notes_temp = fam_notes
-                await fam_notes_temp.filter(n => n.id !== id)
-                setFamNotes(fam_notes_temp)
+                let user_notes = curret_user_notes
+                user_notes.filter(n=>n.id !== id)
+                 fam_notes_temp.filter(n => n.id !== id)
+                await  setFamNotes(fam_notes_temp)
+                await setCurrentUserNotes(user_notes)
                 
             },
             (error) =>
@@ -79,8 +82,8 @@ export default function DrawerNavManager({route,navigation}) {
     }
 
 
-    const fetchFamNotes = (urlFamNotes) => {
-        fetch(urlFamNotes, {
+    const fetchFamNotes = async(urlFamNotes) => {
+       await fetch(urlFamNotes, {
             method: 'GET',
             headers: new Headers({
                 'Content-Type': 'application/json; charset=utf8',
@@ -108,8 +111,8 @@ export default function DrawerNavManager({route,navigation}) {
         )
     }
 
-    const fetchUsersNotes = (urlCurrentNotes) => {
-        fetch(urlCurrentNotes, {
+    const fetchUsersNotes = async (urlCurrentNotes) => {
+      await  fetch(urlCurrentNotes, {
             method: 'GET',
             headers: new Headers({
                 'Content-Type': 'application/json; charset=utf8',
@@ -158,18 +161,18 @@ export default function DrawerNavManager({route,navigation}) {
             }
         ).then(
             async (result) => {
-
+             alert("Succes")
             },
             (error) =>
                 console.log("")
 
         )
-        let notesCurrent = curret_user_notes
+        let notesCurrent = [...curret_user_notes]
         let notesFam = fam_notes
         notesCurrent.push(note)
         notesFam.push(note)
-        await setCurrentUserNotes(notesCurrent)
-        await setFamNotes(notesFam)
+        await setCurrentUserNotes([...notesCurrent])
+        await setFamNotes([...notesFam])
 
 
 
@@ -181,33 +184,39 @@ export default function DrawerNavManager({route,navigation}) {
     return (
     
     <Drawer.Navigator initialRouteName="All">
-        <Drawer.Screen
+       
+        {/* <Drawer.Screen
             name="All"
+        
             component={AllNotes}
-            
-            initialParams={{ hello:{id:'5',value:8},fam:fam_notes,user:curret_user_notes,delete:(i)=>{deleteNote(i)}}}
+       
+            initialParams={{ hello:{id:'5',value:8},fam:fam_notes,user:curret_user_notes,delete:async(i)=>{await deleteNote(i)},create:async(i)=>{await addingNote(i)}}}
             options={{ drawerLabel: 'All', }}
-        />
+        /> */}
   
   <Drawer.Screen
-            name="Board"
+            name="All"
             component={boardPage}
+            initialParams={{type:'All'}}
             options={{ drawerLabel: 'BoardDrawer' }}
         />
 
 <Drawer.Screen
             name="Active"
-            component={ActiveNotes}
+            component={boardPage}
+            initialParams={{type:'Active'}}
             options={{ drawerLabel: 'Active' }}
         />
           <Drawer.Screen
             name="Pending"
-            component={PedningNotes}
+            component={boardPage}
+            initialParams={{type:'Pending'}}
             options={{ drawerLabel: 'Pending' }}
         />
           <Drawer.Screen
             name="Done"
-            component={DoneNotes}
+            component={boardPage}
+            initialParams={{type:'Done'}}
             options={{ drawerLabel: 'Done' }}
         />
         
