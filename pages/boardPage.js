@@ -18,8 +18,10 @@ import {
     SafeAreaInsetsContext,
     useSafeAreaInsets,
     initialWindowMetrics,
-  } from 'react-native-safe-area-context';
+} from 'react-native-safe-area-context';
+import { Badge, withBadge } from 'react-native-elements'
 import { TabRouter } from '@react-navigation/native';
+import BadgeStatus from './BadgeStatus';
 
 // import $, { error } from 'jquery';
 const mock_user = {
@@ -95,15 +97,17 @@ const func1 = (res) => {
     else
         throw 'Oops something went wrong with the current user notes you are trying to bring from db..'
 }
-export default function boardPage({ route,navigation }) {
+
+
+export default function boardPage({ route, navigation }) {
     const [fam_notes, setFamNotes] = useState([])
     const [curret_user_notes, setCurrentUserNotes] = useState([])
     const [username, setUser] = useState("david22")
     const [visible, setVisible] = useState(false);
     const [current, setCurrent] = useState(0);
     const [fam_ID, setFamID] = useState("cohen222");
-
-//Pending,Active,Done,All   
+    const [statusKinds] = ["ACTIVE", "PENDING", "COMPLETED", "DELETED"]
+    //Pending,Active,Done,All   
 
     const fetchFamNotes = (urlFamNotes) => {
         fetch(urlFamNotes, {
@@ -172,7 +176,7 @@ export default function boardPage({ route,navigation }) {
         let urlCurrentNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/fam_member/" + fam_ID + "/" + username;
 
 
-console.log(route.params.type);
+        console.log(route.params.type);
         fetchFamNotes(urlFamNotes)
 
         fetchUsersNotes(urlCurrentNotes)
@@ -272,92 +276,97 @@ console.log(route.params.type);
             setCurrent(null)
         setVisible(!visible);
     }
-   
+
+
+
+
+
     return (
         <SafeAreaView>
-        <ScrollView>
-           
-            <View style={styles.Wrapper}>
-                <LinearGradient
-                    // Background Linear Gradient
-                    colors={['rgba(0,0,0,0.8)', 'transparent']}
-                // style={classes.Wrapper}
-                >
-                    {/* <View>
+            <ScrollView>
+
+                <View style={styles.Wrapper}>
+                    <LinearGradient
+                        // Background Linear Gradient
+                        colors={['rgba(0,0,0,0.8)', 'transparent']}
+                    // style={classes.Wrapper}
+                    >
+                        {/* <View>
       <Button title="Open Overlay" onPress={toggleOverlay} />
 
       <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
        <Note_Overlay note={}/>
       </Overlay>
     </View> */}
-    
-                    <View>
 
-                        <Button title="register" onPress={() => navigation.navigate('Register')}></Button>
-                        <Button title="login" onPress={() => navigation.navigate('Login')}></Button>
-                        <Text>All Tasks</Text>
-                        
-                        {
-                            fam_notes?.map((l, i) =>
+                        <View>
+                            <Button title="register" onPress={() => navigation.navigate('Register')}></Button>
+                            <Button title="login" onPress={() => navigation.navigate('Login')}></Button>
+                            <Text>All Tasks</Text>
+                            <Badge status="success" value="ACTIVE" />
+                            <Badge status="error" value="DELETED" />
+                            <Badge status="primary" value="DONE"/>
+                            <Badge status="warning" value="PENDING" />
+                            {/* <Avatar
+                                rounded
+                                source={{
+                                    uri: 'https://randomuser.me/api/portraits/men/41.jpg',
+                                }}
+                                size="large"
+                            /> */}
+                            {/* <Badge
+                                status="success"
+                                containerStyle={{ position: 'absolute', top: -4, right: -4 }}
+                            /> */}
+
+
+                            {
+                                fam_notes?.map((l, i) =>
                                 // notes.map((l, i) =>0
-                                
-                                curret_user_notes?.find(n => n.title === l.title) !== undefined ?
-                                    (<View key={i}>
+                                (<View key={i}>
+                                    <TouchableOpacity key={i} onPress={() => toggleOverlay(i)}>
+                                        <ListItem key={i} bottomDivider>
+                                            {/* <Avatar source={{ uri: l.avatar_url }} /> */}
+                                            <ListItem.Content>
 
-                                        <TouchableOpacity key={i} onPress={() => toggleOverlay(i)}>
-                                            <ListItem
-                                                key={i} bottomDivider>
-                                                <ListItem.Content>
-                                                    <ListItem.Title>{l.title}
-                                                        <Icon
-                                                            name="edit"
-                                                            color="black"
-                                                            onPress={() => navigation.navigate("EditNote", { note: l })}
-                                                        />
-                                                        <Icon
-                                                            onPress={() => deleteNote(l.id)}
-                                                            name="delete"
-                                                            color="black"
-                                                        />
-                                                    </ListItem.Title>
-                                                    <ListItem.Subtitle>{l.text}</ListItem.Subtitle>
-                                                    <ListItem.Subtitle>{l.users_tagged}</ListItem.Subtitle>
+                                                <ListItem.Title>{l.title}
+                                                    {curret_user_notes?.find(n => n.title === l.title) !== undefined ?
+                                                        <View style={{flexDirection:'row'}}>
+                                                            <Icon
+                                                                name="edit"
+                                                                color="black"
+                                                                onPress={() => navigation.navigate("EditNote", { note: l })}
+                                                            />
+                                                            <Icon
+                                                                onPress={() => deleteNote(l.id)}
+                                                                name="delete"
+                                                                color="black"
+                                                            />
+                                                        </View> : null
+                                                    }
+                                                    <BadgeStatus status={l.status}/>
+                                                </ListItem.Title>
+                                                <ListItem.Subtitle>{l.text}</ListItem.Subtitle>
+                                                <ListItem.Subtitle>{l.users_tagged}</ListItem.Subtitle>
 
-                                                </ListItem.Content>
-                                                <ListItem.Chevron />
-                                            </ListItem>
-                                        </TouchableOpacity >
+                                            </ListItem.Content>
+                                            <ListItem.Chevron />
+                                        </ListItem>
+                                    </TouchableOpacity >
 
-                                    </View>)
-                                    :
-                                    (<View key={i}>
-                                        <TouchableOpacity key={i} onPress={() => toggleOverlay(i)}>
-                                            <ListItem key={i} bottomDivider>
-                                                {/* <Avatar source={{ uri: l.avatar_url }} /> */}
-                                                <ListItem.Content>
+                                </View>)
+                                )
+                            }
+                            <Overlay isVisible={visible} onBackdropPress={() => toggleOverlay(current)}>
 
-                                                    <ListItem.Title>{l.title}</ListItem.Title>
-                                                    <ListItem.Subtitle>{l.text}</ListItem.Subtitle>
-                                                    <ListItem.Subtitle>{l.users_tagged}</ListItem.Subtitle>
+                                <TouchableOpacity key={current} style={{ alignSelf: 'flex-end' }} onPress={() => toggleOverlay(current)}>
+                                    <ListItem.Chevron />
+                                </TouchableOpacity>
+                                <Note_Overlay note={current ? fam_notes[current] : null} />
 
-                                                </ListItem.Content>
-                                                <ListItem.Chevron />
-                                            </ListItem>
-                                        </TouchableOpacity >
+                            </Overlay>
 
-                                    </View>)
-                            )
-                        }
-                        <Overlay isVisible={visible} onBackdropPress={() => toggleOverlay(current)}>
-
-                            <TouchableOpacity key={current} style={{ alignSelf: 'flex-end' }} onPress={() => toggleOverlay(current)}>
-                                <ListItem.Chevron />
-                            </TouchableOpacity>
-                            <Note_Overlay note={current ? fam_notes[current] : null} />
-
-                        </Overlay>
-
-                        {/* <View>
+                            {/* <View>
                         <TouchableOpacity onPress={toggleOverlay}>
                             <ListItem bottomDivider>
                                 <Avatar source={{ uri: l.avatar_url }} />
@@ -382,9 +391,9 @@ console.log(route.params.type);
                     </View> */}
 
 
-                    </View>
-                    <Text>BOARD PAGE</Text>
-                    {/* <View style={styles.notesWrapper}>
+                        </View>
+                        <Text>BOARD PAGE</Text>
+                        {/* <View style={styles.notesWrapper}>
                     <View style={styles.noteRow}>
                         <TouchableOpacity>
                             <View style={styles.container} ><Text >123</Text></View>
@@ -404,24 +413,24 @@ console.log(route.params.type);
 
                     </View>
                 </View> */}
-                    <TouchableOpacity>
-                        <View style={{ backgroundColor: 'yellow' }}>
-                            <Text onPress={() => navigation.navigate('Profile')}>Press me to go to profile</Text>
-                        </View>
+                        <TouchableOpacity>
+                            <View style={{ backgroundColor: 'yellow' }}>
+                                <Text onPress={() => navigation.navigate('Profile')}>Press me to go to profile</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </LinearGradient>
+
+                    <Text>TOTOTTOTOTOTOT</Text>
+
+                    <TouchableOpacity onPress={() => navigation.navigate('AddNote', { addingNote })}>
+                        <Icon
+                            name="add"
+                            color="white"
+                        />
                     </TouchableOpacity>
-                </LinearGradient>
-
-                <Text>TOTOTTOTOTOTOT</Text>
-
-                <TouchableOpacity onPress={() => navigation.navigate('AddNote', { addingNote })}>
-                    <Icon
-                        name="add"
-                        color="white"
-                    />
-                </TouchableOpacity>
-            </View>
-        </ScrollView>
-        </SafeAreaView>
+                </View>
+            </ScrollView>
+        </SafeAreaView >
     )
 
 }
