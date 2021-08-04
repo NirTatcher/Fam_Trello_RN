@@ -19,6 +19,7 @@ import {
     useSafeAreaInsets,
     initialWindowMetrics,
   } from 'react-native-safe-area-context';
+import { TabRouter } from '@react-navigation/native';
 
 // import $, { error } from 'jquery';
 const mock_user = {
@@ -94,7 +95,7 @@ const func1 = (res) => {
     else
         throw 'Oops something went wrong with the current user notes you are trying to bring from db..'
 }
-export default function boardPage({ navigation }) {
+export default function boardPage({ route,navigation }) {
     const [fam_notes, setFamNotes] = useState([])
     const [curret_user_notes, setCurrentUserNotes] = useState([])
     const [username, setUser] = useState("david22")
@@ -171,7 +172,7 @@ export default function boardPage({ navigation }) {
         let urlCurrentNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/fam_member/" + fam_ID + "/" + username;
 
 
-
+console.log(route.params.type);
         fetchFamNotes(urlFamNotes)
 
         fetchUsersNotes(urlCurrentNotes)
@@ -271,10 +272,11 @@ export default function boardPage({ navigation }) {
             setCurrent(null)
         setVisible(!visible);
     }
+   
     return (
         <SafeAreaView>
         <ScrollView>
-
+           
             <View style={styles.Wrapper}>
                 <LinearGradient
                     // Background Linear Gradient
@@ -288,15 +290,17 @@ export default function boardPage({ navigation }) {
        <Note_Overlay note={}/>
       </Overlay>
     </View> */}
+    
                     <View>
 
                         <Button title="register" onPress={() => navigation.navigate('Register')}></Button>
                         <Button title="login" onPress={() => navigation.navigate('Login')}></Button>
                         <Text>All Tasks</Text>
-
+                        
                         {
                             fam_notes?.map((l, i) =>
                                 // notes.map((l, i) =>0
+                                
                                 curret_user_notes?.find(n => n.title === l.title) !== undefined ?
                                     (<View key={i}>
 
@@ -419,4 +423,5 @@ export default function boardPage({ navigation }) {
         </ScrollView>
         </SafeAreaView>
     )
+
 }

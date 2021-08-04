@@ -38,7 +38,7 @@ const styles= StyleSheet.create({
 export default function Note_Overlay(props) {
     return (
         <View style={styles.container}>
-             
+             {console.log(props.note)}
             <View style={styles.title_area}>
                 <Text style={styles.title}>{props.note?.title}</Text>
                 <Text style={styles.date}>{new Date(props.note?.created).toDateString()}</Text>
@@ -47,7 +47,6 @@ export default function Note_Overlay(props) {
                 <Text>{props.note?.text}</Text>
             </View>
             {/* <Text>Users Tagged: {props.note.users_tagged}</Text> */}
-
         </View>
     )
 }
