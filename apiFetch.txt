@@ -32,7 +32,7 @@ FAMILY Controller:
 	"api/Family/setAdmin/{isAdmin}" set OR unset admin User from body
 	
 	DELETE:
-	"api/Family" //Delete famMember (from body)
+	"api/Family/{fam_ID}/{username}" Delete Family member
 	"api/Family/{fam_ID}" Delete Family 
 
 USER Controller:
@@ -50,4 +50,4 @@ USER Controller:
 	
 	DELETE:
 	//לבדוק תקינות.
-	"api/Users/{fam_ID}" //Delete User + data from body(User u)
+	"api/Users/{username}" //Delete User
