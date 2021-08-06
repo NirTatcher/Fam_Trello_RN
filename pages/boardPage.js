@@ -23,6 +23,7 @@ import { Badge, withBadge } from 'react-native-elements'
 import { TabRouter } from '@react-navigation/native';
 import BadgeStatus from './BadgeStatus';
 
+
 // import $, { error } from 'jquery';
 const mock_user = {
     username: "Eldad22",
@@ -107,6 +108,8 @@ export default function boardPage({ route, navigation }) {
     const [current, setCurrent] = useState(0);
     const [fam_ID, setFamID] = useState("cohen222");
     const [statusKinds] = ["ACTIVE", "PENDING", "COMPLETED", "DELETED"]
+
+
     //Pending,Active,Done,All   
 
     const fetchFamNotes = (urlFamNotes) => {

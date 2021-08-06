@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { ToastAndroid, View, Text, Button, StyleSheet, TouchableOpacity, Dimensions, Touchable, Keyboard, Pressable, } from 'react-native'
 import { Checkbox, TextInput } from 'react-native-paper'
 import { linear } from 'react-native/Libraries/Animated/src/Easing'
@@ -28,97 +28,135 @@ export default function RegisterFamily({ route, navigation }) {
     const [fam_ID, setFamID] = useState("");
     const [family_name, setFamilyName] = useState("");
 
-    const [got_family, setGotFamily] = useState(false);
-    const [errros, setErrors] = useState({ err_ID: "", err_name: "" })
+    const [create_family, setCreatetFamily] = useState(false);
+    const [errors, setErrors] = useState({ err_fam_ID: "", err_name: "" })
 
-    async function JoinFamily() {
-        let err = errros;
+
+    const ErrHandler = useCallback(() => {
+        let temp_err = errors;
+
+        console.log(fam_ID.split(/\d+/g));
         if (fam_ID == "") {
-            err.err_ID = "ID cannot be empty."
-            setErrors(err);
-            return;
+            temp_err.err_fam_ID = "ID cannot be empty."
+            setErrors(temp_err);
+            return false;
+        }
+        else if (fam_ID.length < 2) {
+            temp_err.err_fam_ID = "ID to short.";
+            return false;
+        }
+        else if (fam_ID.match(/\d+/g) === null) {
+            temp_err.err_fam_ID = "ID must containe at least 1 digit.";
+            return false;
         }
         else {
-            err.err_ID = ""
-            setErrors(err)
+            temp_err.err_fam_ID = ""
+
         }
 
-        let url_get_fam = "http://ruppinmobile.tempdomain.co.il/site09/api/Family/";
-        let user = route.params.user;
-        setFamMemberData({
-            fam_ID,
-            username: user.username,
-            role:0
-        })
+        if (create_family) {
 
-
-        await fetch(url_get_fam, {
-            method: 'POST',
-            headers: new Headers({
-                'Accept': 'application/json; charset=utf8',
-                'Content-Type': 'application/json; charset=utf8',
-            }),
-            body: JSON.stringify(fam_member_data)
-        }).then(res => {
-            if (res.status > 202)
-                return res.json()
-            else {
-                console.log(res.toString);
-                return;
+            if (family_name == "") {
+                temp_err.err_name = "Family name cannot be empty."
+                setErrors(temp_err);
+                return false;
             }
-        }).then(body => {
-            console.log(body);
-            setFamData(body)
-        }).catch(ex=>{console.log(ex);})
-    }
+            else {
+                temp_err.err_name = "";
+            }
+        }
+        setErrors(temp_err)
+        return true;
 
-    
-    async function Addfamily() {
-        let err = errros;
-        if (fam_ID == "") {
-            err.err_ID = "ID cannot be empty."
-            setErrors(err);
+    })
+
+    async function SendForm() {
+        if (!ErrHandler()) {
+            ToastAndroid.show("Pleass fix errors", ToastAndroid.SHORT)
             return;
         }
-        else {
-            err.err_ID = ""
-            setErrors(err)
-        }
 
-        if(family_name == "")
-        {
-            err.err_name = "Family name cannot be empty."
-            setErrors(err);
-            return;
-        }
-        else{
-            err.err_name ="";
-            setErrors(err)
-        }
-        let url_get_fam = "http://ruppinmobile.tempdomain.co.il/site09/api/Family/";
+        let url_add_fam = "http://ruppinmobile.tempdomain.co.il/site09/api/Family/";
+        let url_add_fam_local = "http://localhost:53832/api/Family/"
+        let url_add_member = "http://ruppinmobile.tempdomain.co.il/site09/api/Family/member";
+
+        let isAdmin = 0;
+        let isApproved = 0;
+        let create_success = true;
+
+        //let user = route.params.user;
+        let name = family_name;
         let fam = {
-            fam_ID,
-            family_name
+            "fam_ID":fam_ID,
+            "name":name
         }
 
+        if (create_family) {
+            isAdmin = 1;
+            isApproved = 1;
+
+            await fetch(url_add_fam, {
+                method: 'POST',
+                headers: new Headers({
+                    'Accept': 'application/json; charset=utf8',
+                    'Content-Type': 'application/json; charset=utf8',
+                }),
+                body: JSON.stringify(fam)
+            }).then(res => {
+                if (res.status < 202)
+                    return Promise.resolve(res.json())
+                else {
+                    ToastAndroid.show("CREATE FAM SomeThing went wrong.." + r, ToastAndroid.LONG)
+                    return Promise.reject(new Error(res.statusText))
+                }
+            }).then(body => {
+                console.log(body);
+            }).catch(ex => {
+                console.log("CATCH FAM MEM - "+ex);
+                create_success = false;
+            })
+
+        }
+        if(!create_success){
+            ToastAndroid.show("Family name not avilable",ToastAndroid.LONG)
+            return;
+        }
+        let username = "Test445";
+
+        let member = {
+            "fam_ID":fam_ID,
+            "username":username,
+            "role":"",
+            "isAdmin":isAdmin,
+            "isApproved":isApproved
+        }
+
+        console.log(member);
         
-        await fetch(url_get_fam, {
+        await fetch(url_add_member, {
             method: 'POST',
             headers: new Headers({
                 'Accept': 'application/json; charset=utf8',
                 'Content-Type': 'application/json; charset=utf8',
             }),
-            body: JSON.stringify(fam)
+            body: JSON.stringify(member)
         }).then(res => {
-            if (res.status > 202)
-                return res.json()
-            else {
-                console.log(res.toString);
-                return;
+            if (res.status < 202) {
+                return Promise.resolve(res.json())
             }
+            else{
+                ToastAndroid.show("SomeThing went wrong..ADD MEMBER" + res.statusText, ToastAndroid.LONG)
+                return Promise.reject(new Error(res.statusText))
+            }
+
+            
         }).then(body => {
-            console.log(body);
+            console.log("Success  - " + body);
+            navigation.navigate( 'Board',member)
+        }).catch(ex => {
+            console.log("Catch "+ex);
         })
+
     }
 
     if (!fontsLoaded)
@@ -128,18 +166,18 @@ export default function RegisterFamily({ route, navigation }) {
             <SafeAreaView style={styles.main}>
                 <View style={styles.wrapper}>
                     <View style={styles.header}>
-                            <Text style={styles.title}>Join A Family</Text>
-                        <Pressable 
-                        onPress={() => { navigation.navigate("Board") }}
-                        style={styles.skip_btn_cont}>
+                        <Text style={styles.title}>Join A Family</Text>
+                        <Pressable
+                            onPress={() => { navigation.navigate("Board") }}
+                            style={styles.skip_btn_cont}>
                             <Text style={styles.skip_btn_txt}>SKIP</Text>
                             <FontAwesome.Button
-                                style={{padding:0}}
+                                style={{ padding: 0 }}
                                 backgroundColor="transparent"
                                 color="#264653"
                                 name="chevron-right"
                                 size={30}
-                                
+
                             />
                         </Pressable>
                         <Text style={styles.sub_title}>Choose to Create a Family OR join Existing one</Text>
@@ -150,30 +188,33 @@ export default function RegisterFamily({ route, navigation }) {
                         <Input
                             label="Enter Family ID"
                             placeholder="Family ID"
-                            errorMessage={errros.err_ID}
+                            errorMessage={errors.err_fam_ID}
                             onChangeText={setFamID}
                             labelStyle={{ color: "black" }}
                         />
                         <View style={styles.chk_box}>
                             <Checkbox
-                                status={got_family ? "unchecked" : "checked"}
-                                onPress={() => { setGotFamily(!got_family) }}
+                                status={create_family ? "checked" : "unchecked"}
+                                onPress={() => { setCreatetFamily(!create_family) }}
                             />
                             <Text style={styles.chk_box_text}>CREATE A FAMILY</Text>
                         </View>
                         <Input
-                            disabled={got_family}
+                            disabled={!create_family}
                             label="Enter Family name"
                             placeholder="Family name"
                             placeholderTextColor="grey"
-                            errorMessage={errros.err_name}
-                            labelStyle={got_family ? { color: "grey" } : { color: "black" }}
+                            errorMessage={errors.err_name}
+                            labelStyle={!create_family ? { color: "grey" } : { color: "black" }}
                             onChangeText={setFamilyName}
                         />
+                        <Text
+                            style={styles.txt_err_server}
+                        >error</Text>
                         <FontAwesome.Button
                             style={styles.join_btn}
                             backgroundColor="#2a9d8f"
-                            onPress={got_family ? JoinFamily : Addfamily}
+                            onPress={SendForm}
                         >
                             JOIN
                         </FontAwesome.Button>
@@ -189,7 +230,7 @@ const styles = StyleSheet.create({
     header: { flexDirection: "row", justifyContent: "space-between", flexWrap: "wrap", alignItems: "stretch", marginTop: 15 },
     title: { fontFamily: 'Inter_900Black', fontSize: 40 },
     sub_title: { fontFamily: 'Inter_400Regular', fontSize: 14, color: "#264653", padding: 5 },
-    skip_btn_cont: { flexDirection: "row", alignItems: "center" ,justifyContent:"center"},
+    skip_btn_cont: { flexDirection: "row", alignItems: "center", justifyContent: "center" },
     skip_btn_txt: { color: "#264653", fontSize: 15 },
     chk_box: { flexDirection: "row", alignItems: "center" },
     input_wrapper: { width: Dimensions.get("window").width * 0.9, alignSelf: "center", marginTop: 25 },

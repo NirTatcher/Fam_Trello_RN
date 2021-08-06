@@ -5,10 +5,6 @@ import MyCheckBox from './CheckBox';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import SafeAreaProvider from 'react-native-safe-area-context'
-import FirstPage from './FirstPage'
-import SecondPage from './SecondPage'
-import FourthPage from './FourthPage';
-import FifthPage from './FifthPage';
 import RegisterPage from './pages/registerPage';
 import LoginPage from './pages/loginPage';
 import ProfilePage from './pages/profilePage';
