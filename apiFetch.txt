@@ -24,6 +24,8 @@ FAMILY Controller:
 	"api/Family/member/{fam_ID}/{username}" get member
 	"api/Family/members/{fam_ID}" get family members
 	"api/Family/push_token/{username}" get Expo push token
+	"api/Family/GetAdminsTokens/{fam_ID}" get admins tokens
+	"api/Family/GetUnApproved/{fam_ID}" list of unapproved usernames
 	
 	POST:
 	"api/Family"  //AddFamily (from body)
