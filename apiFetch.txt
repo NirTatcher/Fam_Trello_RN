@@ -8,7 +8,7 @@ NOTE Controller:
 	"api/Note/status/{note_ID}" get note status
 	
 	POST:
-	"api/Note/"  data form body
+	"api/Note/"  data form body FIXED. temple = { title,text,created,username,fam_ID }
 	"api/Note/tagged/" send tagged users - arr from body ex.[{note_ID:503,username:"Eldad22"},{note_ID:503,username:"david22"}]
 	
 	PUT:(update)
@@ -45,6 +45,7 @@ USER Controller:
 	"api/User/{username}"
 	"api/User/families/{username}" Get User Families
 	"api/User/sign_in" FromBody (username,password) Return Ok-200,Not Content 204(pass wod dont match),BadReq 400(no user)
+	"api/User/close_con" close connection
 	
 	POST:
 	"api/User/" //AddUser (from body) 
