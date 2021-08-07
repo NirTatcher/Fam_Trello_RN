@@ -21,12 +21,15 @@ NOTE Controller:
 FAMILY Controller:
 	GET:
 	"api/Family/{fam_ID}"
+	"api/Family/member/{fam_ID}/{username}" get member
 	"api/Family/members/{fam_ID}" get family members
+	"api/Family/push_token/{username}" get Expo push token
 	
 	POST:
 	"api/Family"  //AddFamily (from body)
 	"api/Family/member" //AddMember(from body)
 	"api/Family/approve" Approve member by admin
+	"api/Family/push_token/{token}" set push token
 	
 	PUT:
 	"api/Family/setAdmin/{isAdmin}" set OR unset admin User from body
@@ -41,6 +44,7 @@ USER Controller:
 	GET:
 	"api/User/{username}"
 	"api/User/families/{username}" Get User Families
+	"api/User/sign_in" FromBody (username,password) Return Ok-200,Not Content 204(pass wod dont match),BadReq 400(no user)
 	
 	POST:
 	"api/User/" //AddUser (from body) 
