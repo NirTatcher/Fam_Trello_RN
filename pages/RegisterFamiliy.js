@@ -1,35 +1,93 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import { ToastAndroid, View, Text, Button, StyleSheet, TouchableOpacity, Dimensions, Touchable, Keyboard, Pressable, } from 'react-native'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
+import { ToastAndroid, View, Text, Button, StyleSheet, TouchableOpacity, Dimensions, Touchable, Keyboard, Pressable, Platform } from 'react-native'
 import { Checkbox, TextInput } from 'react-native-paper'
-import { linear } from 'react-native/Libraries/Animated/src/Easing'
-import { LinearGradient } from 'expo-linear-gradient';
 import { Switch } from 'react-native-elements';
 import { I18nManager } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { FontAwesome } from '@expo/vector-icons';
 import { Input } from 'react-native-elements';
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import * as SecureStore from 'expo-secure-store';
 import { Alert } from 'react-native';
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
 import { Inter_900Black, Inter_500Medium, Inter_400Regular, Inter_200ExtraLight } from '@expo-google-fonts/inter';
-import {
-    SafeAreaView,
-    SafeAreaProvider,
-    SafeAreaInsetsContext,
-    useSafeAreaInsets,
-    initialWindowMetrics,
-} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
+import { log } from 'react-native-reanimated';
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+    }),
+});
 
 export default function RegisterFamily({ route, navigation }) {
+    // const [perm_final_status, setPermFinalStatus]
+    const [expoPushToken, setExpoPushToken] = useState('');
+    const [notification, setNotification] = useState(false);
+    const notificationListener = useRef();
+    const responseListener = useRef();
+
     const [fontsLoaded] = useFonts({ Inter_900Black, Inter_500Medium, Inter_400Regular, Inter_200ExtraLight })
-    const [fam_member_data, setFamMemberData] = useState({ fam_ID: "", name: "" });
     const [fam_ID, setFamID] = useState("");
     const [family_name, setFamilyName] = useState("");
 
     const [create_family, setCreatetFamily] = useState(false);
     const [errors, setErrors] = useState({ err_fam_ID: "", err_name: "" })
+
+
+    useEffect(() => {
+
+        registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+        console.log(expoPushToken);
+
+        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+            setNotification(notification);
+        });
+
+        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+            console.log(response);
+        });
+
+        return () => {
+            Notifications.removeNotificationSubscription(notificationListener.current);
+            Notifications.removeNotificationSubscription(responseListener.current);
+        };
+    }, [])
+
+    async function registerForPushNotificationsAsync() {
+        let token;
+        if (Constants.isDevice) {
+            const { status: existingStatus } = await Notifications.getPermissionsAsync();
+            let finalStatus = existingStatus;
+            if (existingStatus !== 'granted') {
+                const { status } = await Notifications.requestPermissionsAsync();
+                finalStatus = status;
+            }
+            if (finalStatus !== 'granted') {
+                alert('Failed to get push token for push notification!');
+                return;
+            }
+            token = (await Notifications.getExpoPushTokenAsync()).data;
+            console.log(token);
+        } else {
+            alert('Must use physical device for Push Notifications');
+        }
+
+        if (Platform.OS === 'android') {
+            Notifications.setNotificationChannelAsync('default', {
+                name: 'default',
+                importance: Notifications.AndroidImportance.MAX,
+                vibrationPattern: [0, 250, 250, 250],
+                lightColor: '#FF231F7C',
+            });
+        }
+
+        return token;
+    }
 
 
     const ErrHandler = useCallback(() => {
@@ -87,8 +145,8 @@ export default function RegisterFamily({ route, navigation }) {
         //let user = route.params.user;
         let name = family_name;
         let fam = {
-            "fam_ID":fam_ID,
-            "name":name
+            "fam_ID": fam_ID,
+            "name": name
         }
 
         if (create_family) {
@@ -112,27 +170,28 @@ export default function RegisterFamily({ route, navigation }) {
             }).then(body => {
                 console.log(body);
             }).catch(ex => {
-                console.log("CATCH FAM MEM - "+ex);
+                console.log("CATCH FAM MEM - " + ex);
                 create_success = false;
             })
 
         }
-        if(!create_success){
-            ToastAndroid.show("Family name not avilable",ToastAndroid.LONG)
+        if (!create_success) {
+            ToastAndroid.show("Family name not avilable", ToastAndroid.LONG)
             return;
         }
         let username = "Test445";
 
         let member = {
-            "fam_ID":fam_ID,
-            "username":username,
-            "role":"",
-            "isAdmin":isAdmin,
-            "isApproved":isApproved
+            "fam_ID": fam_ID,
+            "username": username,
+            "role": "",
+            "isAdmin": isAdmin,
+            "isApproved": isApproved,
+            "push_token": expoPushToken
         }
 
         console.log(member);
-        
+
         await fetch(url_add_member, {
             method: 'POST',
             headers: new Headers({
@@ -144,20 +203,68 @@ export default function RegisterFamily({ route, navigation }) {
             if (res.status < 202) {
                 return Promise.resolve(res.json())
             }
-            else{
+            else {
                 ToastAndroid.show("SomeThing went wrong..ADD MEMBER" + res.statusText, ToastAndroid.LONG)
                 return Promise.reject(new Error(res.statusText))
             }
 
-            
         }).then(body => {
             console.log("Success  - " + body);
-            navigation.navigate( 'Board',member)
+            RequestAdminPermmision()
+            //navigation.navigate('Board', member)
         }).catch(ex => {
-            console.log("Catch "+ex);
+            console.log("Catch " + ex);
         })
 
     }
+
+    async function RequestAdminPermmision() {
+
+        let mock_id = "cohen222"
+        let url_get_fam_members = "http://ruppinmobile.tempdomain.co.il/site09/api/Family/GetAdminsTokens/" + mock_id;
+        let mem_arr = undefined;
+
+        await fetch(url_get_fam_members, {
+            method: 'GET'
+        }).then((res) => {
+            console.log(res.status);
+
+            if (res.status < 204)
+                return Promise.resolve(res.json())
+            else
+                return Promise.reject(new Error(res.statusText))
+        }
+        ).then(res => {
+            console.log("res " + res);
+
+            mem_arr = res;
+        }).catch(ex => {
+            console.log("catch" + ex);
+        })
+
+
+        if (mem_arr != undefined) {
+            for (let index = 0; index < mem_arr.length; index++) {
+                const t = mem_arr[index];
+                if (t.length > 4) {
+
+                }
+
+            }
+        }
+
+    }
+
+    async function PushNotification() {
+        let push_url = "https://exp.host/--/api/v2/push/send"
+        await fetch(push_url, {
+            method: 'POST',
+            headers:{}
+            
+        })
+
+    }
+
 
     if (!fontsLoaded)
         return <AppLoading />
@@ -221,6 +328,29 @@ export default function RegisterFamily({ route, navigation }) {
                     </View>
 
                 </View>
+                <View
+                    style={{
+                        flex: 1,
+                        alignItems: 'center',
+                        justifyContent: 'space-around',
+                    }}>
+                    <Text>Your expo push token: {expoPushToken}</Text>
+                    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                        <Text>Title: {notification && notification.request.content.title} </Text>
+                        <Text>Body: {notification && notification.request.content.body}</Text>
+                        <Text>Data: {notification && JSON.stringify(notification.request.content.data)}</Text>
+                    </View>
+                    <Button
+                        title="Press to schedule a notification"
+                        onPress={async () => {
+                            await schedulePushNotification();
+                        }}
+                    />
+                </View>
+                <Button
+                    onPress={RequestAdminPermmision}
+                    title="RequestAdminPermmision"
+                ></Button>
             </SafeAreaView>
         )
 }

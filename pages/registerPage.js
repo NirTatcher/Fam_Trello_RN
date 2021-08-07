@@ -12,17 +12,8 @@ import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
 import { Inter_900Black, Inter_500Medium, Inter_400Regular } from '@expo-google-fonts/inter';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import * as Notifications from 'expo-notifications';
-import Constants from 'expo-constants';
 
 
-Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: false,
-      shouldSetBadge: false,
-    }),
-  });
 
 const classes = StyleSheet.create(
     {
@@ -104,63 +95,14 @@ export default function registerPage({ navigation }) {
     const [age, setAge] = useState("")
     const [reg_succ,setRegSucc] = useState(true);
     const [errors, setErrors] = useState({ username: "", password: "", re_pass: "", email: "", age: "" })
-    const [perm_final_status,setPermFinalStatus]
-    const [expoPushToken, setExpoPushToken] = useState('');
-    const [notification, setNotification] = useState(false);
-    const notificationListener = useRef();
-    const responseListener = useRef();
+
 
     const [fontsLoaded] = useFonts({ Inter_900Black, Inter_500Medium, Inter_400Regular })
 
     I18nManager.allowRTL(false);
     I18nManager.forceRTL(false);
-    // useEffect(()=>{
-    //     registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
 
-    //     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-    //         setNotification(notification);
-    //       });
-      
-    //       responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-    //         console.log(response);
-    //       });
-      
-    //       return () => {
-    //         Notifications.removeNotificationSubscription(notificationListener.current);
-    //         Notifications.removeNotificationSubscription(responseListener.current);
-    //       };
-    // },[])
 
-async function registerForPushNotificationsAsync() {
-  let token;
-  if (Constants.isDevice) {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-    if (existingStatus !== 'granted') {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-    if (finalStatus !== 'granted') {
-      alert('Failed to get push token for push notification!');
-      return;
-    }
-    token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log(token);
-  } else {
-    alert('Must use physical device for Push Notifications');
-  }
-
-  if (Platform.OS === 'android') {
-    Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C',
-    });
-  }
-
-  return token;
-}
 
     function ValidateFields(){
         let user = {
@@ -169,7 +111,8 @@ async function registerForPushNotificationsAsync() {
             first_name,
             age,
             email,
-            age
+            age,
+            ExpexpoPushToken
         };
         for (let [key, value] of Object.entries(errors)) {
             if (value != "") {
@@ -224,7 +167,10 @@ async function registerForPushNotificationsAsync() {
             console.log(er);  
         })
 
+
         if(reg_succ){
+            //registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+            //alert(token)
             navigation.navigate('RegisterFamily',user);
         }else{
             ToastAndroid.show("username taken OR invalid details")
