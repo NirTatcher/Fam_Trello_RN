@@ -106,13 +106,12 @@ export default function registerPage({ navigation }) {
 
     function ValidateFields(){
         let user = {
-            username,
-            password,
-            first_name,
-            age,
-            email,
-            age,
-            ExpexpoPushToken
+            username:username,
+            password:password,
+            first_name:first_name,
+            age:age,
+            email:email,
+            age:age,
         };
         for (let [key, value] of Object.entries(errors)) {
             if (value != "") {
@@ -162,6 +161,7 @@ export default function registerPage({ navigation }) {
             }
         ).then((res)=>{
             Alert.alert("Registartion Completed.")
+            setRegSucc(true)
         }).catch((er)=>{
             setRegSucc(false)
             console.log(er);  
@@ -171,7 +171,7 @@ export default function registerPage({ navigation }) {
         if(reg_succ){
             //registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
             //alert(token)
-            navigation.navigate('RegisterFamily',user);
+            navigation.navigate('RegisterFamily',{user:user});
         }else{
             ToastAndroid.show("username taken OR invalid details")
         }

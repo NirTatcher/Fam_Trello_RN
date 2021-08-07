@@ -19,6 +19,8 @@ import DoneNotes from './pages/DoneNotes';
 import PedningNotes from './pages/PedningNotes'
 import ActiveNotes from './pages/ActiveNotes';
 import RegisterFamily from './pages/RegisterFamiliy';
+import Inbox from './pages/Inbox';
+import SelectFamily from './pages/SelectFamily';
 
 
 
@@ -63,9 +65,11 @@ export default function App() {
     <NavigationContainer>
     <Stack.Navigator
     screenOptions={{headerShown:false}}
-     initialRouteName="Drawer">
+     initialRouteName="Login">
         <Stack.Screen name="Register" component={RegisterPage} />
         <Stack.Screen name="RegisterFamily" component={RegisterFamily} />
+        <Stack.Screen name="SelectFamily" component={SelectFamily} />
+        <Stack.Screen name="Inbox" component={Inbox} />
         <Stack.Screen name="Login" component={LoginPage} />
         <Stack.Screen name="Profile" component={ProfilePage} />
         <Stack.Screen name="Board" component={BoardPage} />

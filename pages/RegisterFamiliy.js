@@ -8,9 +8,11 @@ import { FontAwesome } from '@expo/vector-icons';
 import { Input } from 'react-native-elements';
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { Alert } from 'react-native';
+
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
 import { Inter_900Black, Inter_500Medium, Inter_400Regular, Inter_200ExtraLight } from '@expo-google-fonts/inter';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
@@ -26,6 +28,7 @@ Notifications.setNotificationHandler({
 
 export default function RegisterFamily({ route, navigation }) {
     // const [perm_final_status, setPermFinalStatus]
+    
     const [expoPushToken, setExpoPushToken] = useState('');
     const [notification, setNotification] = useState(false);
     const notificationListener = useRef();
@@ -41,6 +44,8 @@ export default function RegisterFamily({ route, navigation }) {
 
     useEffect(() => {
 
+        console.log(route.params.user);
+        
         registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
         console.log(expoPushToken);
 
@@ -49,8 +54,9 @@ export default function RegisterFamily({ route, navigation }) {
         });
 
         responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-            console.log(response);
+            console.log(navigation.navigate('Inbox'));
         });
+        
 
         return () => {
             Notifications.removeNotificationSubscription(notificationListener.current);
@@ -180,10 +186,11 @@ export default function RegisterFamily({ route, navigation }) {
             return;
         }
         let username = "Test445";
+        let user  = route.params.user;
 
         let member = {
             "fam_ID": fam_ID,
-            "username": username,
+            "username": user.username,
             "role": "",
             "isAdmin": isAdmin,
             "isApproved": isApproved,
@@ -204,14 +211,14 @@ export default function RegisterFamily({ route, navigation }) {
                 return Promise.resolve(res.json())
             }
             else {
-                ToastAndroid.show("SomeThing went wrong..ADD MEMBER" + res.statusText, ToastAndroid.LONG)
-                return Promise.reject(new Error(res.statusText))
+                //ToastAndroid.show("SomeThing went wrong..ADD MEMBER" + res.statusText, ToastAndroid.LONG)
+                return Promise.reject(new Error(res.status))
             }
 
         }).then(body => {
             console.log("Success  - " + body);
             RequestAdminPermmision()
-            //navigation.navigate('Board', member)
+            navigation.navigate('Drawer', member)
         }).catch(ex => {
             console.log("Catch " + ex);
         })
@@ -221,7 +228,7 @@ export default function RegisterFamily({ route, navigation }) {
     async function RequestAdminPermmision() {
 
         let mock_id = "cohen222"
-        let url_get_fam_members = "http://ruppinmobile.tempdomain.co.il/site09/api/Family/GetAdminsTokens/" + mock_id;
+        let url_get_fam_members = "http://ruppinmobile.tempdomain.co.il/site09/api/Family/GetAdminsTokens/" + fam_ID;
         let mem_arr = undefined;
 
         await fetch(url_get_fam_members, {
@@ -247,7 +254,7 @@ export default function RegisterFamily({ route, navigation }) {
             for (let index = 0; index < mem_arr.length; index++) {
                 const t = mem_arr[index];
                 if (t.length > 4) {
-
+                    PushNotification(t)
                 }
 
             }
@@ -255,13 +262,32 @@ export default function RegisterFamily({ route, navigation }) {
 
     }
 
-    async function PushNotification() {
+    async function PushNotification(token) {
         let push_url = "https://exp.host/--/api/v2/push/send"
-        await fetch(push_url, {
+        // let username = route.params.user.username
+        let username = route.params.user.username;
+
+
+        const message = {
+            to: token,
+            sound: 'default',
+            title: 'New Family Member',
+            body: 'Hi,' + username + ' would like to join the Family.\nApprove?',
+            data: { someData: 'goes here' },
+        };
+
+        await fetch('https://exp.host/--/api/v2/push/send', {
             method: 'POST',
-            headers:{}
-            
-        })
+            headers: {
+                Accept: 'application/json',
+                'Accept-encoding': 'gzip, deflate',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(message),
+        }).then(res => {
+            console.log(res.body);
+        });
+
 
     }
 
@@ -328,11 +354,21 @@ export default function RegisterFamily({ route, navigation }) {
                     </View>
 
                 </View>
+
+                <Button
+                    onPress={RequestAdminPermmision}
+                    title="RequestAdminPermmision"
+                ></Button>
+                <Button
+                    onPress={PushNotification}
+                    title="send push notificationadn"
+                ></Button>
+
                 <View
                     style={{
-                        flex: 1,
-                        alignItems: 'center',
-                        justifyContent: 'space-around',
+                        // flex: 1,
+                        // alignItems: 'center',
+                        // justifyContent: 'space-around',
                     }}>
                     <Text>Your expo push token: {expoPushToken}</Text>
                     <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -340,17 +376,8 @@ export default function RegisterFamily({ route, navigation }) {
                         <Text>Body: {notification && notification.request.content.body}</Text>
                         <Text>Data: {notification && JSON.stringify(notification.request.content.data)}</Text>
                     </View>
-                    <Button
-                        title="Press to schedule a notification"
-                        onPress={async () => {
-                            await schedulePushNotification();
-                        }}
-                    />
+
                 </View>
-                <Button
-                    onPress={RequestAdminPermmision}
-                    title="RequestAdminPermmision"
-                ></Button>
             </SafeAreaView>
         )
 }
