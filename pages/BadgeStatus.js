@@ -1,20 +1,43 @@
 import React, { useState } from 'react'
-import { View, Text } from 'react-native'
+import { View, Text,StyleSheet } from 'react-native'
 import { Badge, withBadge } from 'react-native-elements'
+
+
+const styles = StyleSheet.create({
+    badge: {
+        width: '90%',
+      height:30
+
+    },
+
+
+})
+
 export default function BadgeStatus(props) {
     const [statusKinds]=useState([ "ACTIVE" ,"PENDING", "COMPLETED", "DELETED"])
-    if(props.status === 0)
+
+    // <Badge status="success" value="ACTIVE" />
+    // <Badge status="error" value="DELETED" />
+    // <Badge status="primary" value="DONE" />
+    // <Badge status="warning" value="PENDING" />
+    if(props.status === "ACTIVE")
     return (
         <View>
             
-            <Badge status="success" value="succes"/>
+            <Badge badgeStyle={styles.badge} status="success" value="ACTIVE" />
         </View>
     )
-    else return(
-        <View>
-            
-        <Badge status="warning" value="succes"/>
-    </View>
-
+    else if(props.status === "PENDING")
+    return(
+        <Badge badgeStyle={styles.badge} status="warning" value="PENDING" />
+    )
+    else if(props.status === "COMPLETED")
+    return(
+           <Badge badgeStyle={styles.badge} status="primary" value="COMPLETED" />
+    )
+    else
+     (props.status === "DELETED")
+    return(
+        <Badge badgeStyle={styles.badge} status="error" value="DELETED" />
     )
 }

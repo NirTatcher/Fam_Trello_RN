@@ -1,5 +1,5 @@
 import { useFocusEffect } from '@react-navigation/core'
-import React, { useEffect } from 'react'
+import React, { createRef, useEffect } from 'react'
 import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView, Alert } from 'react-native'
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import profilePage from './profilePage'
@@ -11,7 +11,8 @@ import { Button, Overlay, Icon } from 'react-native-elements';
 import Note_Overlay from './Note_Overlay';
 import { Input } from 'react-native-elements/dist/input/Input';
 import { log } from 'react-native-reanimated';
-import { I18nManager } from 'react-native';
+import { CheckBox, I18nManager } from 'react-native';
+
 import {
     SafeAreaView,
     SafeAreaProvider,
@@ -23,7 +24,9 @@ import { Badge, withBadge } from 'react-native-elements'
 import { TabRouter } from '@react-navigation/native';
 import BadgeStatus from './BadgeStatus';
 
-
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import AppLoading from 'expo-app-loading';
 // import $, { error } from 'jquery';
 const mock_user = {
     username: "Eldad22",
@@ -44,7 +47,7 @@ const styles = StyleSheet.create({
 
 
     },
-    container: {
+    containerNote: {
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
@@ -58,13 +61,17 @@ const styles = StyleSheet.create({
     noteRow: {
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'space-around'
+        justifyContent: 'space-evenly'
 
     },
     notesWrapper: {
         display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        alignItems: 'center',
+
+        justifyContent: 'space-evenly',
 
 
     },
@@ -95,20 +102,22 @@ const notes = [
 const func1 = (res) => {
     if (res.ok)
         return res.json()
-    else
-        throw 'Oops something went wrong with the current user notes you are trying to bring from db..'
+    // else
+    //     throw 'Oops something went wrong with the current user notes you are trying to bring from db..'
 }
 
 
 export default function boardPage({ route, navigation }) {
-    const [fam_notes, setFamNotes] = useState([])
+    const [fam_notes, setFamNotes] = useState([]);
     const [curret_user_notes, setCurrentUserNotes] = useState([])
     const [username, setUser] = useState("david22")
     const [visible, setVisible] = useState(false);
     const [current, setCurrent] = useState(0);
     const [fam_ID, setFamID] = useState("cohen222");
-    const [statusKinds] = ["ACTIVE", "PENDING", "COMPLETED", "DELETED"]
-
+    const myStatusKinds = ["ACTIVE", "PENDING", "COMPLETED", "DELETED"]
+    const statusKinds = ["success", "warning", "primary", "error"]
+    const [isSelected, setSelected] = useState([])
+    const [isTabVisible, setTabVisible] = useState(false);
 
     //Pending,Active,Done,All   
 
@@ -124,8 +133,8 @@ export default function boardPage({ route, navigation }) {
 
                 if (res.ok)
                     return res.json()
-                else
-                    return () => { throw 'Oops something went wrong with the fam notes you are trying to bring from db..' }
+                // else
+                //     return () => { throw 'Oops something went wrong with the fam notes you are trying to bring from db..' }
                 //  func1(res)
             }
         ).then(
@@ -171,18 +180,29 @@ export default function boardPage({ route, navigation }) {
             }
         )
     }
-    useEffect(() => {
+    // useEffect(() => {
+    //     let urlFamNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/family/cohen222";
+    //     let urlCurrentNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/user/" + username;
 
+
+    //     // console.log(route.params.type);
+    //     fetchFamNotes(urlFamNotes)
+
+    //     fetchUsersNotes(urlCurrentNotes)
+
+    // }, [fam_notes,curret_user_notes])
+    useEffect(() => {
         I18nManager.allowRTL(false);
         I18nManager.forceRTL(false);
         let urlFamNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/family/cohen222";
-        let urlCurrentNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/fam_member/" + fam_ID + "/" + username;
+        let urlCurrentNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/user/" + username;
 
 
-        console.log(route.params.type);
+        // console.log(route.params.type);
         fetchFamNotes(urlFamNotes)
 
         fetchUsersNotes(urlCurrentNotes)
+
         return () => {
             console.log("clean up");
         }
@@ -194,10 +214,10 @@ export default function boardPage({ route, navigation }) {
     }
 
 
-    const addingNote = async (note) => {
+    const addingNote = (note,users) => {
 
 
-        await fetch('http://ruppinmobile.tempdomain.co.il/site09/api/Note/',
+        fetch('http://ruppinmobile.tempdomain.co.il/site09/api/Note/',
             {
                 method: 'POST',
                 body: JSON.stringify(note),
@@ -213,39 +233,61 @@ export default function boardPage({ route, navigation }) {
                 return res.json()
             }
         ).then(
-            async (result) => {
-
+            (result) => {
+                console.log(result);
             },
             (error) =>
-                console.log("")
+                console.log("errrorr")
+
+        )
+        
+        fetch('http://ruppinmobile.tempdomain.co.il/site09/api/Note/tagged/',
+            {
+                method: 'POST',
+                body: JSON.stringify(users),
+                headers: new Headers({
+                    'Content-type': 'application/json; charset=UTF-8'
+                })
+
+            }
+
+        ).then(
+            res => {
+
+                return res.json()
+            }
+        ).then(
+            (result) => {
+                console.log(result);
+            },
+            (error) =>
+                console.log("errrorr")
 
         )
         let notesCurrent = curret_user_notes
         let notesFam = fam_notes
         notesCurrent.push(note)
         notesFam.push(note)
-        await setCurrentUserNotes(notesCurrent)
-        await setFamNotes(notesFam)
+        setCurrentUserNotes(notesCurrent)
+        setFamNotes(notesFam)
 
 
 
     }
     useEffect(() => {
-        let urlCurrentNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/fam_member/" + fam_ID + "/" + username;
+        let urlCurrentNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/user/" + username;
         fetchUsersNotes(urlCurrentNotes)
 
     }, [curret_user_notes])
 
 
-
     useEffect(() => {
         let urlFamNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/family/cohen222";
         fetchFamNotes(urlFamNotes)
-
     }, [fam_notes])
 
-    const deleteNote = (id) => {
 
+    const deleteNote = (id) => {
         let url = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/" + id;
 
         fetch(url,
@@ -264,7 +306,7 @@ export default function boardPage({ route, navigation }) {
         ).then(
             (result) => {
                 let fam_notes_temp = fam_notes
-                fam_notes_temp.filter(n => n.id !== id)
+                fam_notes_temp = fam_notes_temp.filter(n => n.id !== id)
                 setFamNotes(fam_notes_temp)
             },
             (error) =>
@@ -273,99 +315,195 @@ export default function boardPage({ route, navigation }) {
         )
     }
     const toggleOverlay = (e) => {
+        console.log(fam_notes[0])
         if (visible === false)
             setCurrent(e)
         else
-            setCurrent(null)
+            setCurrent(0)
         setVisible(!visible);
     }
 
+    const UpdateStatus = (status) => {
+        console.log(fam_notes[current].note_id);
+        let url = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/status/" + fam_notes[current].note_id + "/" + status
+
+        fetch(url,
+            {
+                method: 'PUT',
+                headers: new Headers({
+                    'accept': 'application/json; charset=UTF-8'
+                })
+                , body: JSON.stringify(status)
+
+            }
+
+        ).then(
+            res => {
+                return res.json()
+            }
+        ).then(
+            (result) => {
+                console.log(result)
+                fam_notes[current].status = status
+            },
+            (error) =>
+                alert(error)
+
+        )
+
+    }
+    const updateNote=(note)=>{
+      
+        let url = "http://ruppinmobile.tempdomain.co.il/site09/api/Note"
+
+        fetch(url,
+            {
+                method: 'PUT',
+                headers: new Headers({
+                    'accept': 'application/json; charset=UTF-8'
+                })
+                , body: JSON.stringify(note)
+
+            }
+
+        ).then(
+            res => {
+                return res.json()
+            }
+        ).then(
+            (result) => {
+                console.log(result)
+                fam_notes[current] = note
+            },
+            (error) =>
+                alert(error)
+
+        )
+    }
+    const updateSelected = (i) => {
+
+        if (isSelected.find(r => r === i) !== undefined) {
+            let selected = isSelected;
+            selected = selected.filter(r => r !== i)
 
 
+            setSelected(selected)
+            if (selected.length === 0)
+                setTabVisible(false)
 
+        }
+        else
+            setSelected([...isSelected, i])
 
+        //   if(isSelected===[])
+        //   route.params.setInVisible()
+    }
+
+    const deleteNotes = (notes) => {
+        for (let index = 0; index < notes.length; index++) {
+            const noteNum = notes[index];
+            deleteNote(fam_notes[noteNum].note_id);
+        }
+        setSelected([]);
+    }
+
+    const AreYouSure = async(numOfFiles) => {
+        let text = ""
+        console.log(numOfFiles)
+        if (numOfFiles > 1)
+            text = "Are you sure you want to delete " + numOfFiles + " items?"
+        else
+            text="Are you sure you want to delete " + numOfFiles + " item?"
+        Alert.alert("Hold on!", text, [
+            {
+                text: "Cancel",
+                onPress: () =>  null,
+                style: "cancel"
+            },
+            {
+                text: "YES", onPress: () =>
+                      deleteNotes(isSelected)
+            }
+        ]);
+    }
+    if(fam_notes===undefined||curret_user_notes===undefined){
+        return <AppLoading/>
+    }else
     return (
         <SafeAreaView>
-            <ScrollView>
+            <ScrollView
+            >
 
                 <View style={styles.Wrapper}>
                     <LinearGradient
-                        // Background Linear Gradient
-                        colors={['rgba(0,0,0,0.8)', 'transparent']}
-                    // style={classes.Wrapper}
-                    >
-                        {/* <View>
-      <Button title="Open Overlay" onPress={toggleOverlay} />
-
-      <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
-       <Note_Overlay note={}/>
-      </Overlay>
-    </View> */}
-
+                        colors={['rgba(0,0,0,0.8)', 'transparent']}>
                         <View>
                             <Button title="register" onPress={() => navigation.navigate('Register')}></Button>
                             <Button title="login" onPress={() => navigation.navigate('Login')}></Button>
                             <Text>All Tasks</Text>
                             <Badge status="success" value="ACTIVE" />
                             <Badge status="error" value="DELETED" />
-                            <Badge status="primary" value="DONE"/>
+                            <Badge status="primary" value="COMPLETED" />
                             <Badge status="warning" value="PENDING" />
-                            {/* <Avatar
-                                rounded
-                                source={{
-                                    uri: 'https://randomuser.me/api/portraits/men/41.jpg',
-                                }}
-                                size="large"
-                            /> */}
-                            {/* <Badge
-                                status="success"
-                                containerStyle={{ position: 'absolute', top: -4, right: -4 }}
-                            /> */}
 
 
-                            {
-                                fam_notes?.map((l, i) =>
-                                // notes.map((l, i) =>0
-                                (<View key={i}>
-                                    <TouchableOpacity key={i} onPress={() => toggleOverlay(i)}>
-                                        <ListItem key={i} bottomDivider>
-                                            {/* <Avatar source={{ uri: l.avatar_url }} /> */}
-                                            <ListItem.Content>
+                            <View style={{ backgroundColor: 'white', flexDirection: 'row', justifyContent: 'space-evenly',display:isSelected.length===0?'none':'flex' }}><Text>{isSelected.length === 0 ? "" : isSelected.length + " - Selected"}</Text>
+                                <Icon
+                                    onPress={() => {
+                                  AreYouSure(isSelected.length)
+                                    }}
+                                    name="delete"
+                                    color="black" />
+                            </View>
+                            <View style={styles.notesWrapper}>
+                                {
+                                    fam_notes?.map((l, i) =>
 
-                                                <ListItem.Title>{l.title}
-                                                    {curret_user_notes?.find(n => n.title === l.title) !== undefined ?
-                                                        <View style={{flexDirection:'row'}}>
-                                                            <Icon
-                                                                name="edit"
-                                                                color="black"
-                                                                onPress={() => navigation.navigate("EditNote", { note: l })}
-                                                            />
-                                                            <Icon
-                                                                onPress={() => deleteNote(l.id)}
-                                                                name="delete"
-                                                                color="black"
-                                                            />
-                                                        </View> : null
-                                                    }
-                                                    <BadgeStatus status={l.status}/>
-                                                </ListItem.Title>
+                                        <TouchableOpacity key={i} onPress={() => toggleOverlay(i)} onLongPress={() => {
+
+                                            setSelected([...isSelected, i])
+                                        }}>
+
+
+                                            <View style={styles.containerNote} >
+                                                {isSelected.find(r => r === i) === undefined ? isSelected.length > 0 ? <CheckBox onValueChange={() => updateSelected(i)} /> : null :
+                                                    <CheckBox value={true} onValueChange={() => updateSelected(i)} name={i} />
+
+                                                }
+                                                <Text>{l.title}</Text>
+                                                {curret_user_notes?.find?.(n => n.title === l.title) !== undefined ?
+                                                    <View style={{ flexDirection: 'row' }}>
+                                                        <Icon
+                                                            name="edit"
+                                                            color="black"
+                                                            onPress={() => navigation.navigate("EditNote", { note: l,update:(note)=>updateNote(note) })}
+                                                        />
+                                                        <Icon
+                                                            onPress={() => deleteNote(l.note_id)}
+                                                            name="delete"
+                                                            color="black"
+                                                        />
+                                                    </View> : null
+                                                }
+
+
+                                                <Badge status={statusKinds[myStatusKinds.findIndex(k => k === l.status)]} />
+
                                                 <ListItem.Subtitle>{l.text}</ListItem.Subtitle>
                                                 <ListItem.Subtitle>{l.users_tagged}</ListItem.Subtitle>
+                                            </View></TouchableOpacity>
 
-                                            </ListItem.Content>
-                                            <ListItem.Chevron />
-                                        </ListItem>
-                                    </TouchableOpacity >
+                                    )
+                                }
+                            </View>
 
-                                </View>)
-                                )
-                            }
+
                             <Overlay isVisible={visible} onBackdropPress={() => toggleOverlay(current)}>
 
                                 <TouchableOpacity key={current} style={{ alignSelf: 'flex-end' }} onPress={() => toggleOverlay(current)}>
                                     <ListItem.Chevron />
                                 </TouchableOpacity>
-                                <Note_Overlay note={current ? fam_notes[current] : null} />
+                                <Note_Overlay updateNote={updateNote} toggleOverLayParent={toggleOverlay} navigation={navigation} UpdateStatus={UpdateStatus} note={fam_notes[current]} />
 
                             </Overlay>
 
@@ -425,13 +563,22 @@ export default function boardPage({ route, navigation }) {
 
                     <Text>TOTOTTOTOTOTOT</Text>
 
-                    <TouchableOpacity onPress={() => navigation.navigate('AddNote', { addingNote })}>
+                    <TouchableOpacity onPress={() => navigation.navigate('AddNote', { addNote: (note,users) => addingNote(note,users) })}>
                         <Icon
                             name="add"
                             color="white"
                         />
                     </TouchableOpacity>
+
+                    <TouchableOpacity onPress={() => navigation.navigate('AddingNote', { add: (note) => addingNote(note) })}>
+                       <Text>2</Text>
+                    </TouchableOpacity>
+
+
+
+
                 </View>
+
             </ScrollView>
         </SafeAreaView >
     )

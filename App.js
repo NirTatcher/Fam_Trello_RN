@@ -22,6 +22,7 @@ import RegisterFamily from './pages/RegisterFamiliy';
 import Inbox from './pages/Inbox';
 import SelectFamily from './pages/SelectFamily';
 
+import AddingNote from './pages/AddingNote'
 
 
 const Stack = createStackNavigator();
@@ -81,7 +82,7 @@ export default function App() {
         <Stack.Screen name="Done" component={DoneNotes} />
         <Stack.Screen name="Active" component={ActiveNotes} />
         <Stack.Screen name="Drawer" component={DrawerNavManager} />
-
+        <Stack.Screen name="AddingNote" component={AddingNote} />
         </Stack.Navigator>   
          </NavigationContainer>
 

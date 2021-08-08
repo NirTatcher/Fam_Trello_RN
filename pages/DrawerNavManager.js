@@ -12,7 +12,6 @@ import AppLoading from 'expo-app-loading';
 const Drawer = createDrawerNavigator();
 export default function DrawerNavManager({route,navigation}) {
     const [fam_notes, setFamNotes] = useState(undefined)
-    const [curret_user_notes, setCurrentUserNotes] = useState(undefined)
     const [username, setUser] = useState("david22")
     const [visible, setVisible] = useState(false);
     const [current, setCurrent] = useState(0);
