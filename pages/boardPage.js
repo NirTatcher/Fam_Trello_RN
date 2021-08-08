@@ -1,6 +1,6 @@
 import { useFocusEffect } from '@react-navigation/core'
 import React, { createRef, useEffect } from 'react'
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView, Alert, Dimensions, Share, Modal } from 'react-native'
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import profilePage from './profilePage'
 import { LinearGradient } from 'expo-linear-gradient';
@@ -27,6 +27,7 @@ import BadgeStatus from './BadgeStatus';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import AppLoading from 'expo-app-loading';
+import { Pressable } from 'react-native';
 // import $, { error } from 'jquery';
 const mock_user = {
     username: "Eldad22",
@@ -36,13 +37,13 @@ const mock_user = {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#fff',
+        backgroundColor: 'red',
         alignItems: 'center',
         justifyContent: 'center',
         borderStyle: 'solid',
         borderWidth: 1,
         width: 150,
-        height: 150,
+        height: "100%",
         marginTop: 50
 
 
@@ -56,7 +57,7 @@ const styles = StyleSheet.create({
         width: 150,
         height: 150,
         borderRadius: 15,
-        marginTop: 30
+        marginTop: 30,
     },
     noteRow: {
         display: 'flex',
@@ -72,39 +73,68 @@ const styles = StyleSheet.create({
         alignItems: 'center',
 
         justifyContent: 'space-evenly',
+        height: '65%'
 
 
     },
     Wrapper: {
-        height: '100%',
+        height: Dimensions.get('window').height,
         backgroundColor: '#491c0b',
         // overflow:'scroll'
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22
+    },
+    modalView: {
+        // margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        width: '40%',
+        height: '20%',
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
+    button: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2
+    },
+    buttonOpen: {
+        backgroundColor: "#F194FF",
+    },
+    buttonClose: {
+        backgroundColor: "#2196F3",
+    },
+    textStyle: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center"
+    },
+    modalText: {
+        // marginBottom: 15,
+        textAlign: "center"
+    },
+    add_btn:{
+        backgroundColor:'orange',
+        width:'15%',
+        height:'8%',
+        alignSelf:'center',
+        borderRadius:25,
+        justifyContent:'center'
     }
 });
 
-const notes = [
-    {
-        date: '19/07/2021',
-        title: 'Amy Farha',
-        text: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-        users_tagged: 'Vice President',
-    },
-    {
-        created: '19/07/2021',
-        title: 'Chris Jackson',
-        text: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-        users_tagged: 'Vice Chairman',
-    },
 
-]
-
-
-const func1 = (res) => {
-    if (res.ok)
-        return res.json()
-    // else
-    //     throw 'Oops something went wrong with the current user notes you are trying to bring from db..'
-}
 
 
 export default function boardPage({ route, navigation }) {
@@ -118,8 +148,8 @@ export default function boardPage({ route, navigation }) {
     const statusKinds = ["success", "warning", "primary", "error"]
     const [isSelected, setSelected] = useState([])
     const [isTabVisible, setTabVisible] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
 
-    //Pending,Active,Done,All   
 
     const fetchFamNotes = (urlFamNotes) => {
         fetch(urlFamNotes, {
@@ -140,7 +170,21 @@ export default function boardPage({ route, navigation }) {
         ).then(
             (result) => {
                 // setFamNotes(result)
-
+                let notes=[]
+                if(route.params.type!=="All"){
+                for (let index = 0; index < result.length; index++) {
+                    const element = result[index];
+                    if(element.status === new String(route.params.type).toUpperCase()){
+                       notes.push(element)
+                        
+                    }
+                    
+                }
+                if(notes!==[]){
+                    setFamNotes(notes)
+                }
+            }
+                else
                 setFamNotes(result)
 
             },
@@ -159,17 +203,13 @@ export default function boardPage({ route, navigation }) {
 
         }).then(
             res => {
-                // console.log(res.ok)
-                // if(res.ok)
-                // return res.json()
-                // else
-                // throw 'Oops something went wrong with the current user notes you are trying to bring from db..'
+
                 return res.json()
 
             }
         ).then(
             (result) => {
-                // setFamNotes(result)
+
 
                 setCurrentUserNotes(result)
 
@@ -180,17 +220,7 @@ export default function boardPage({ route, navigation }) {
             }
         )
     }
-    // useEffect(() => {
-    //     let urlFamNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/family/cohen222";
-    //     let urlCurrentNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/user/" + username;
 
-
-    //     // console.log(route.params.type);
-    //     fetchFamNotes(urlFamNotes)
-
-    //     fetchUsersNotes(urlCurrentNotes)
-
-    // }, [fam_notes,curret_user_notes])
     useEffect(() => {
         I18nManager.allowRTL(false);
         I18nManager.forceRTL(false);
@@ -203,6 +233,9 @@ export default function boardPage({ route, navigation }) {
 
         fetchUsersNotes(urlCurrentNotes)
 
+
+      
+
         return () => {
             console.log("clean up");
         }
@@ -213,8 +246,22 @@ export default function boardPage({ route, navigation }) {
         alert("You CLicked See Details")
     }
 
-
-    const addingNote = (note,users) => {
+const setFamNotesAgain=async()=>{
+    console.log(new String(route.params.type).toUpperCase())
+    let famTemp=fam_notes
+    let user_notes=curret_user_notes
+    if(famTemp.length!==[] && curret_user_notes!==[])
+   {
+       famTemp.map(t=>t.status === new String(route.params.type).toUpperCase() === false ? famTemp.pop():"")
+       user_notes.map(t=>t.status === new String(route.params.type).toUpperCase() === false ? famTemp.pop():"")
+    // console.log(famTemp.filter(r=>r.status==new String(route.params.type).toUpperCase()))
+    //  famTemp = await famTemp.filter(r=>new String(r.status).toUpperCase()!==new String(route.params.type).toUpperCase())
+   await setFamNotes(famTemp)
+   await setCurrentUserNotes(user_notes)
+   }
+   
+}
+    const addingNote = (note, users) => {
 
 
         fetch('http://ruppinmobile.tempdomain.co.il/site09/api/Note/',
@@ -240,7 +287,7 @@ export default function boardPage({ route, navigation }) {
                 console.log("errrorr")
 
         )
-        
+
         fetch('http://ruppinmobile.tempdomain.co.il/site09/api/Note/tagged/',
             {
                 method: 'POST',
@@ -352,8 +399,8 @@ export default function boardPage({ route, navigation }) {
         )
 
     }
-    const updateNote=(note)=>{
-      
+    const updateNote = (note) => {
+
         let url = "http://ruppinmobile.tempdomain.co.il/site09/api/Note"
 
         fetch(url,
@@ -407,180 +454,247 @@ export default function boardPage({ route, navigation }) {
         setSelected([]);
     }
 
-    const AreYouSure = async(numOfFiles) => {
+    const AreYouSure = async (numOfFiles) => {
         let text = ""
         console.log(numOfFiles)
         if (numOfFiles > 1)
             text = "Are you sure you want to delete " + numOfFiles + " items?"
         else
-            text="Are you sure you want to delete " + numOfFiles + " item?"
+            text = "Are you sure you want to delete " + numOfFiles + " item?"
         Alert.alert("Hold on!", text, [
             {
                 text: "Cancel",
-                onPress: () =>  null,
+                onPress: () => null,
                 style: "cancel"
             },
             {
                 text: "YES", onPress: () =>
-                      deleteNotes(isSelected)
+                    deleteNotes(isSelected)
             }
         ]);
     }
-    if(fam_notes===undefined||curret_user_notes===undefined){
-        return <AppLoading/>
-    }else
-    return (
-        <SafeAreaView>
-            <ScrollView
-            >
-
-                <View style={styles.Wrapper}>
-                    <LinearGradient
-                        colors={['rgba(0,0,0,0.8)', 'transparent']}>
-                        <View>
-                            <Button title="register" onPress={() => navigation.navigate('Register')}></Button>
-                            <Button title="login" onPress={() => navigation.navigate('Login')}></Button>
-                            <Text>All Tasks</Text>
-                            <Badge status="success" value="ACTIVE" />
-                            <Badge status="error" value="DELETED" />
-                            <Badge status="primary" value="COMPLETED" />
-                            <Badge status="warning" value="PENDING" />
 
 
-                            <View style={{ backgroundColor: 'white', flexDirection: 'row', justifyContent: 'space-evenly',display:isSelected.length===0?'none':'flex' }}><Text>{isSelected.length === 0 ? "" : isSelected.length + " - Selected"}</Text>
-                                <Icon
-                                    onPress={() => {
-                                  AreYouSure(isSelected.length)
-                                    }}
-                                    name="delete"
-                                    color="black" />
+    const onShare = async (note) => {
+        try {
+            const result = await Share.share({
+               title:'A message from Fam_Trello!',
+                message:
+                    "A Note From Fam_Trello |"+ note.title+':  '+ note.text,
+                
+            });
+            if (result.action === Share.sharedAction) {
+                if (result.activityType) {
+                    // shared with activity type of result.activityType
+                } else {
+                    // shared
+                }
+            } else if (result.action === Share.dismissedAction) {
+                // dismissed
+            }
+        } catch (error) {
+            alert(error.message);
+        }
+    };
+
+    if (fam_notes === undefined || curret_user_notes === undefined) {
+        return <AppLoading />
+    } else
+        return (
+            <SafeAreaView>
+                <ScrollView
+                >
+
+                    <View style={styles.Wrapper}>
+                        <LinearGradient
+                            colors={['rgba(0,0,0,0.8)', 'transparent']}>
+                            <View>
+                                <Button title="register" onPress={() => navigation.navigate('Register')}></Button>
+                                <Button title="login" onPress={() => navigation.navigate('Login')}></Button>
+                                <Text>All Tasks</Text>
+                                <Badge status="success" value="ACTIVE" />
+                                <Badge status="error" value="DELETED" />
+                                <Badge status="primary" value="COMPLETED" />
+                                <Badge status="warning" value="PENDING" />
+
+
+                                <View style={{ backgroundColor: 'white', flexDirection: 'row', justifyContent: 'space-evenly', display: isSelected.length === 0 ? 'none' : 'flex' }}><Text>{isSelected.length === 0 ? "" : isSelected.length + " - Selected"}</Text>
+                                    <Icon
+                                        onPress={() => {
+                                            AreYouSure(isSelected.length)
+                                        }}
+                                        name="delete"
+                                        color="black" />
+                                </View>
+                                <View style={styles.notesWrapper}>
+                                    {
+                                        fam_notes?.map((l, i) =>
+                                            
+                                            <TouchableOpacity key={i} onPress={() => toggleOverlay(i)} onLongPress={() => {
+
+                                                setSelected([...isSelected, i])
+                                            }}>
+
+                                                
+                                                <View style={styles.containerNote} >
+                                                    <View style={{ alignSelf: 'flex-end', marginRight: 10 }}>
+                                                        <Badge status={statusKinds[myStatusKinds.findIndex(k => k === l.status)]} />
+                                                    </View>
+                                                    {isSelected.find(r => r === i) === undefined ? isSelected.length > 0 ? <CheckBox onValueChange={() => updateSelected(i)} /> : null :
+                                                        <CheckBox value={true} onValueChange={() => updateSelected(i)} name={i} />
+
+                                                    }
+                                                    <Text>{new Date(l.created).toDateString()}</Text>
+                                                    <Text>{l.title}</Text>
+
+                                                    {/* {curret_user_notes?.find?.(n => n.title === l.title) !== undefined ?
+                                                        <View style={{ flexDirection: 'row' }}>
+
+                                                            <Icon
+                                                                name="edit"
+                                                                color="black"
+                                                                onPress={() => navigation.navigate("EditNote", { note: l, update: (note) => updateNote(note) })}
+                                                            />
+
+                                                            <Icon
+                                                                onPress={() => deleteNote(l.note_id)}
+                                                                name="delete"
+                                                                color="black"
+                                                            />
+                                                        </View> : null
+                                                    } */}
+
+
+
+
+                                                    <ListItem.Subtitle>{l.text}</ListItem.Subtitle>
+                                                    <ListItem.Subtitle>{l.users_tagged}</ListItem.Subtitle>
+                                                    <View style={{ alignSelf: 'center', justifyContent: 'center' }}>
+                                                        <TouchableOpacity onPress={() => setModalVisible(true)}>
+                                                            <Icon
+
+                                                                name="more-horiz"
+                                                                color="black"
+                                                            />
+
+                                                        </TouchableOpacity>
+                                                        <Modal
+                                                            animationType="slide"
+                                                            transparent={true}
+                                                            visible={modalVisible}
+                                                            onRequestClose={() => {
+                                                                // Alert.alert("Modal has been closed.");
+                                                                setModalVisible(!modalVisible);
+                                                            }}
+                                                        >
+                                                            <View style={styles.centeredView}>
+
+                                                                <View style={styles.modalView}>
+                                                                    <View style={{ alignSelf: 'flex-end', marginRight: 10 }}>
+                                                                        <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
+                                                                            <Icon
+                                                                                name="close"
+                                                                                color="black"
+                                                                            />
+                                                                        </TouchableOpacity>
+                                                                    </View>
+                                                                    {curret_user_notes?.find?.(n => n.title === l.title) !== undefined ?
+                                                                        <View style={{ flexDirection: 'row', alignSelf: 'center', justifyContent: 'space-around', marginTop: '25%', width: '100%' }}>
+                                                                            <TouchableOpacity>
+                                                                                <Icon
+                                                                                    name="share"
+                                                                                    color="black"
+                                                                                    onPress={() => {
+                                                                                        onShare(l)
+                                                                                        setModalVisible(!modalVisible)
+                                                                                    }}
+                                                                                />
+                                                                            </TouchableOpacity>
+
+
+                                                                            <TouchableOpacity>
+                                                                                <Icon
+                                                                                    name="delete"
+                                                                                    color="black"
+                                                                                    onPress={() => {
+                                                                                        deleteNote(l.note_id)
+                                                                                        setModalVisible(!modalVisible)
+                                                                                    }}
+                                                                                />
+                                                                            </TouchableOpacity>
+
+                                                                            <TouchableOpacity>
+                                                                                <Icon
+                                                                                    name="edit"
+                                                                                    color="black"
+
+                                                                                    onPress={() => {
+
+                                                                                        navigation.navigate("EditNote", { note: l, update: (note) => updateNote(note) })
+                                                                                        setModalVisible(!modalVisible)
+                                                                                    }}
+
+                                                                                />
+                                                                            </TouchableOpacity>
+
+
+                                                                        </View> : <TouchableOpacity>
+                                                                            <Icon
+                                                                                name="share"
+                                                                                color="black"
+                                                                                onPress={() => {
+                                                                                    onShare()
+                                                                                    setModalVisible(!modalVisible)
+                                                                                }}
+                                                                            />
+                                                                        </TouchableOpacity>}
+                                                                    {/* <Pressable onPress={() => setModalVisible(!modalVisible)}><Text>Share</Text></Pressable>
+                                                                    <Pressable onPress={() => setModalVisible(!modalVisible)}><Text>Print</Text></Pressable>
+                                                                    <Pressable onPress={() => setModalVisible(!modalVisible)}><Text>Edit</Text></Pressable> */}
+
+                                                                </View>
+                                                            </View>
+
+                                                        </Modal>
+                                                    </View>
+                                                </View></TouchableOpacity>
+
+                                        )
+                                    }
+                                </View>
+                                <Overlay isVisible={visible} onBackdropPress={() => toggleOverlay(current)}>
+
+                                    <TouchableOpacity key={current} style={{ alignSelf: 'flex-end' }} onPress={() => toggleOverlay(current)}>
+                                        <ListItem.Chevron />
+                                    </TouchableOpacity>
+                                    <Note_Overlay updateNote={updateNote} toggleOverLayParent={toggleOverlay} navigation={navigation} UpdateStatus={UpdateStatus} note={fam_notes[current]} />
+
+                                </Overlay>
+
+                            
+
                             </View>
-                            <View style={styles.notesWrapper}>
-                                {
-                                    fam_notes?.map((l, i) =>
-
-                                        <TouchableOpacity key={i} onPress={() => toggleOverlay(i)} onLongPress={() => {
-
-                                            setSelected([...isSelected, i])
-                                        }}>
 
 
-                                            <View style={styles.containerNote} >
-                                                {isSelected.find(r => r === i) === undefined ? isSelected.length > 0 ? <CheckBox onValueChange={() => updateSelected(i)} /> : null :
-                                                    <CheckBox value={true} onValueChange={() => updateSelected(i)} name={i} />
-
-                                                }
-                                                <Text>{l.title}</Text>
-                                                {curret_user_notes?.find?.(n => n.title === l.title) !== undefined ?
-                                                    <View style={{ flexDirection: 'row' }}>
-                                                        <Icon
-                                                            name="edit"
-                                                            color="black"
-                                                            onPress={() => navigation.navigate("EditNote", { note: l,update:(note)=>updateNote(note) })}
-                                                        />
-                                                        <Icon
-                                                            onPress={() => deleteNote(l.note_id)}
-                                                            name="delete"
-                                                            color="black"
-                                                        />
-                                                    </View> : null
-                                                }
-
-
-                                                <Badge status={statusKinds[myStatusKinds.findIndex(k => k === l.status)]} />
-
-                                                <ListItem.Subtitle>{l.text}</ListItem.Subtitle>
-                                                <ListItem.Subtitle>{l.users_tagged}</ListItem.Subtitle>
-                                            </View></TouchableOpacity>
-
-                                    )
-                                }
-                            </View>
-
-
-                            <Overlay isVisible={visible} onBackdropPress={() => toggleOverlay(current)}>
-
-                                <TouchableOpacity key={current} style={{ alignSelf: 'flex-end' }} onPress={() => toggleOverlay(current)}>
-                                    <ListItem.Chevron />
-                                </TouchableOpacity>
-                                <Note_Overlay updateNote={updateNote} toggleOverLayParent={toggleOverlay} navigation={navigation} UpdateStatus={UpdateStatus} note={fam_notes[current]} />
-
-                            </Overlay>
-
-                            {/* <View>
-                        <TouchableOpacity onPress={toggleOverlay}>
-                            <ListItem bottomDivider>
-                                <Avatar source={{ uri: l.avatar_url }} />
-                                <ListItem.Content>
-
-                                    <ListItem.Title>Title</ListItem.Title>
-                                    <ListItem.Subtitle>Text</ListItem.Subtitle>
-                                    <ListItem.Subtitle>Users</ListItem.Subtitle>
-
-                                </ListItem.Content>
-                                <ListItem.Chevron />
-                            </ListItem>
-                        </TouchableOpacity >
-                        <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
-
-                            <TouchableOpacity style={{ alignSelf: 'flex-end' }} onPress={toggleOverlay}>
-                                <ListItem.Chevron />
-                            </TouchableOpacity>
-                            <Note_Overlay note={{ title: 'title', text: 'text' }} />
-
-                        </Overlay>
-                    </View> */}
-
-
-                        </View>
-                        <Text>BOARD PAGE</Text>
-                        {/* <View style={styles.notesWrapper}>
-                    <View style={styles.noteRow}>
-                        <TouchableOpacity>
-                            <View style={styles.container} ><Text >123</Text></View>
+                      
+                            <TouchableOpacity style={styles.add_btn} onPress={() => navigation.navigate('AddNote', { addNote: (note, users) => addingNote(note, users) })}>
+                            <Icon
+                                name="add"
+                                color="white"
+                            />
                         </TouchableOpacity>
-                        <TouchableOpacity>
-                            <View style={styles.container} ><Text >123</Text></View>
-                        </TouchableOpacity>
+                        </LinearGradient>
+
+
+
+
+
+
 
                     </View>
-                    <View style={styles.noteRow}>
-                        <TouchableOpacity>
-                            <View style={styles.container} ><Text >123</Text></View>
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <View style={styles.container} ><Text >123</Text></View>
-                        </TouchableOpacity>
 
-                    </View>
-                </View> */}
-                        <TouchableOpacity>
-                            <View style={{ backgroundColor: 'yellow' }}>
-                                <Text onPress={() => navigation.navigate('Profile')}>Press me to go to profile</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </LinearGradient>
-
-                    <Text>TOTOTTOTOTOTOT</Text>
-
-                    <TouchableOpacity onPress={() => navigation.navigate('AddNote', { addNote: (note,users) => addingNote(note,users) })}>
-                        <Icon
-                            name="add"
-                            color="white"
-                        />
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={() => navigation.navigate('AddingNote', { add: (note) => addingNote(note) })}>
-                       <Text>2</Text>
-                    </TouchableOpacity>
-
-
-
-
-                </View>
-
-            </ScrollView>
-        </SafeAreaView >
-    )
+                </ScrollView>
+            </SafeAreaView >
+        )
 
 }
