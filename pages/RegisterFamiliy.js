@@ -28,14 +28,14 @@ Notifications.setNotificationHandler({
 
 export default function RegisterFamily({ route, navigation }) {
     // const [perm_final_status, setPermFinalStatus]
-    
+
     const [expoPushToken, setExpoPushToken] = useState('');
     const [notification, setNotification] = useState(false);
     const notificationListener = useRef();
     const responseListener = useRef();
 
     const [fontsLoaded] = useFonts({ Inter_900Black, Inter_500Medium, Inter_400Regular, Inter_200ExtraLight })
-    const [username,setUsername] = useState()
+    const [username, setUsername] = useState()
     const [fam_ID, setFamID] = useState("");
     const [family_name, setFamilyName] = useState("");
 
@@ -58,7 +58,7 @@ export default function RegisterFamily({ route, navigation }) {
         responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
             console.log(navigation.navigate('Inbox'));
         });
-        
+
 
         return () => {
             Notifications.removeNotificationSubscription(notificationListener.current);
@@ -186,7 +186,7 @@ export default function RegisterFamily({ route, navigation }) {
         if (!create_success) {
             ToastAndroid.show("Family name not avilable", ToastAndroid.LONG)
             return;
-        } 
+        }
 
         let member = {
             "fam_ID": fam_ID,
@@ -227,7 +227,7 @@ export default function RegisterFamily({ route, navigation }) {
 
     async function RequestAdminPermmision() {
 
-        let url_get_fam_members = "http://ruppinmobile.tempdomain.co.il/site09/api/Family/GetAdminsTokens/"+fam_ID 
+        let url_get_fam_members = "http://ruppinmobile.tempdomain.co.il/site09/api/Family/GetAdminsTokens/" + fam_ID
         let mem_arr = undefined;
 
         await fetch(url_get_fam_members, {
@@ -262,10 +262,10 @@ export default function RegisterFamily({ route, navigation }) {
 
     }
 
-    async function PushNotification(token,name) {
+    async function PushNotification(token, name) {
         let push_url = "https://exp.host/--/api/v2/push/send"
         // let username = route.params.user.username
-        
+
         const message = {
             to: token,
             sound: 'default',
@@ -299,7 +299,7 @@ export default function RegisterFamily({ route, navigation }) {
                     <View style={styles.header}>
                         <Text style={styles.title}>Join A Family</Text>
                         <Pressable
-                            onPress={() => { navigation.navigate("Board") }}
+                            onPress={() => { navigation.navigate("Drawer") }}
                             style={styles.skip_btn_cont}>
                             <Text style={styles.skip_btn_txt}>SKIP</Text>
                             <FontAwesome.Button
@@ -342,13 +342,12 @@ export default function RegisterFamily({ route, navigation }) {
                         <Text
                             style={styles.txt_err_server}
                         ></Text>
-                        <FontAwesome.Button
-                            style={styles.join_btn}
-                            backgroundColor="#2a9d8f"
+                        <Pressable
                             onPress={SendForm}
+                            style={styles.join_btn}
                         >
-                            JOIN
-                        </FontAwesome.Button>
+                            <Text style={styles.join_btn_txt}>Join</Text>
+                        </Pressable>
                     </View>
 
                 </View>
@@ -369,11 +368,30 @@ export default function RegisterFamily({ route, navigation }) {
 const styles = StyleSheet.create({
     main: { fontFamily: 'Inter_400Regular' },
     header: { flexDirection: "row", justifyContent: "space-between", flexWrap: "wrap", alignItems: "stretch", marginTop: 15 },
-    title: { fontFamily: 'Inter_900Black', fontSize: 40 },
+    title: { fontFamily: 'Inter_900Black', fontSize: 40, color: "#0a9396" },
     sub_title: { fontFamily: 'Inter_400Regular', fontSize: 14, color: "#264653", padding: 5 },
     skip_btn_cont: { flexDirection: "row", alignItems: "center", justifyContent: "center" },
     skip_btn_txt: { color: "#264653", fontSize: 15 },
     chk_box: { flexDirection: "row", alignItems: "center" },
     input_wrapper: { width: Dimensions.get("window").width * 0.9, alignSelf: "center", marginTop: 25 },
-    join_btn: { color: "#1a759f", alignSelf: "center" },
+    join_btn: {
+        width:200,
+        backgroundColor: "#2a9d8f",
+        marginTop: 20,
+        borderStyle: "solid",
+        borderWidth: 0.5,
+        margin: 5,
+        borderRadius: 7,
+        borderTopRightRadius: 10,
+        borderBottomWidth: 3,
+        borderBottomColor: "#3D5467",
+        color: "#1a759f",
+        alignSelf: "center"
+    },
+    join_btn_txt: {
+        alignSelf: "center",
+        padding: 7,
+        fontSize: 20,
+        fontFamily: 'Inter_500Medium'
+    }
 })

@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { View, Text, Button, TouchableOpacity, StyleSheet, Pressable, Alert } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import { Dimensions } from 'react-native';
@@ -20,7 +20,7 @@ export default function loginPage({ navigation }) {
     const [btn_pressed, setBtnPressed] = useState(false);
     const [fontsLoaded] = useFonts({ Inter_900Black, Inter_500Medium, Inter_400Regular, Inter_300Light, Inter_200ExtraLight })
     const [loginError, setLoginError] = useState("");
-
+    const [mounted, setMounted] = useState(false)
 
 
     async function Login() {
@@ -44,8 +44,8 @@ export default function loginPage({ navigation }) {
             if (res.password == password) {
                 //ToastAndroid.show("Welcome " + username, ToastAndroid.LONG)
                 GetFamList();
-                navigation.navigate("SelectFamily", {username:username,fam_list:fam_list});
-                
+                navigation.navigate("SelectFamily", { username: username, fam_list: fam_list });
+
             }
             else {
                 setLoginError("Incorrect password")
@@ -132,7 +132,8 @@ export default function loginPage({ navigation }) {
                         <Text style={styles.BtnText}>REGISTER</Text>
                     </Pressable> */}
                     <Pressable
-                    style={styles.Btn}
+                        style={styles.Btn}
+                        onPress ={Login}
                     >
                         <Text style={styles.BtnText}>SIGN IN</Text>
                     </Pressable>
@@ -145,10 +146,10 @@ export default function loginPage({ navigation }) {
                     onPress={()=>{navigation.navigate("SelectFamily",{username:"mock"})}}
                     /> */}
                     <Pressable
-                    onPress ={()=>{navigation.navigate("Register")}}
-                    style={styles.register_btn}>
+                        onPress={() => { navigation.navigate("Register") }}
+                        style={styles.register_btn}>
                         <Text >new member?</Text>
-                        <Text style ={ styles.register_btn_txt}>REGISTER</Text>
+                        <Text style={styles.register_btn_txt}>REGISTER</Text>
                     </Pressable>
 
                 </View>
@@ -170,7 +171,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 40,
         fontFamily: "Inter_900Black",
-        color:"#0a9396"
+        color: "#0a9396"
     },
     sub_title: {
         fontSize: 20,
@@ -187,15 +188,15 @@ const styles = StyleSheet.create({
         margin: 5
     },
     picker: {
-        borderColor:"black",
-        borderWidth:2,
+        borderColor: "black",
+        borderWidth: 2,
         margin: 10
     },
     Btn: {
-        backgroundColor:"#eae4e9",
-        marginTop:20,
-        borderStyle:"solid",
-        borderWidth:0.5,
+        backgroundColor: "#eae4e9",
+        marginTop: 20,
+        borderStyle: "solid",
+        borderWidth: 0.5,
         margin: 5,
         borderRadius: 7,
         borderTopRightRadius: 10,
@@ -203,17 +204,17 @@ const styles = StyleSheet.create({
         borderBottomColor: "#3D5467",
     },
     BtnText: {
-        alignSelf:"center",
+        alignSelf: "center",
         padding: 7,
         fontSize: 20,
         fontFamily: "Inter_500Medium"
 
-    },register_btn:{
-        marginTop:100
-    },register_btn_txt:{
-        fontSize:20,
+    }, register_btn: {
+        marginTop: 100
+    }, register_btn_txt: {
+        fontSize: 20,
         color: "#005f73",
-        fontFamily:"Inter_500Medium"
+        fontFamily: "Inter_500Medium"
     }
 
 })

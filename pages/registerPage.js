@@ -37,13 +37,14 @@ const classes = StyleSheet.create(
         container: {
             borderRadius: 10
         },
-        title: {
-            alignSelf: "center",
-            fontSize: 40,
-            margin: 20,
-            fontFamily: 'Inter_900Black',
-            marginTop: 20
-        },
+        // title: {
+        //     alignSelf: "center",
+        //     fontSize: 40,
+        //     margin: 20,
+        //     fontFamily: 'Inter_900Black',
+        //     marginTop: 20,
+
+        // },
         // input: {
         //     backgroundColor: 'transparent',
         //     color: 'black', // <-- The magic
@@ -71,7 +72,6 @@ const classes = StyleSheet.create(
             borderTopRightRadius: 10,
             borderBottomWidth: 3,
             borderBottomColor: "#3D5467",
-            textAlign:"center"
         },
         BtbText: {
             alignSelf:"center",
@@ -82,7 +82,7 @@ const classes = StyleSheet.create(
         back_btn_cont: { flexDirection: "row", alignItems: "center" ,justifyContent:"center"},
         back_btn_txt: { color: "#264653", fontSize: 15 },
         header: { flexDirection: "row", justifyContent: "space-between", flexWrap: "wrap", alignItems: "stretch", marginTop: 15,marginBottom:20 },
-        title: { fontFamily: 'Inter_900Black', fontSize: 40 },
+        title: { fontFamily: 'Inter_900Black', fontSize: 40,color:"#0a9396"},
 
 
     }

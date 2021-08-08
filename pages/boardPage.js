@@ -12,6 +12,8 @@ import Note_Overlay from './Note_Overlay';
 import { Input } from 'react-native-elements/dist/input/Input';
 import { log } from 'react-native-reanimated';
 import { CheckBox, I18nManager } from 'react-native';
+import { useFonts } from 'expo-font';
+import { Inter_900Black, Inter_500Medium, Inter_400Regular, Inter_200ExtraLight } from '@expo-google-fonts/inter';
 
 import {
     SafeAreaView,
@@ -35,107 +37,6 @@ const mock_user = {
 }
 
 
-const styles = StyleSheet.create({
-    container: {
-        backgroundColor: 'red',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderStyle: 'solid',
-        borderWidth: 1,
-        width: 150,
-        height: "100%",
-        marginTop: 50
-
-
-    },
-    containerNote: {
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderStyle: 'solid',
-        borderWidth: 1,
-        width: 150,
-        height: 150,
-        borderRadius: 15,
-        marginTop: 30,
-    },
-    noteRow: {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-evenly'
-
-    },
-    notesWrapper: {
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        alignItems: 'center',
-
-        justifyContent: 'space-evenly',
-        height: '65%'
-
-
-    },
-    Wrapper: {
-        height: Dimensions.get('window').height,
-        backgroundColor: '#491c0b',
-        // overflow:'scroll'
-    },
-    centeredView: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: 22
-    },
-    modalView: {
-        // margin: 20,
-        backgroundColor: "white",
-        borderRadius: 20,
-        width: '40%',
-        height: '20%',
-        alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5
-    },
-    button: {
-        borderRadius: 20,
-        padding: 10,
-        elevation: 2
-    },
-    buttonOpen: {
-        backgroundColor: "#F194FF",
-    },
-    buttonClose: {
-        backgroundColor: "#2196F3",
-    },
-    textStyle: {
-        color: "white",
-        fontWeight: "bold",
-        textAlign: "center"
-    },
-    modalText: {
-        // marginBottom: 15,
-        textAlign: "center"
-    },
-    add_btn:{
-        backgroundColor:'orange',
-        width:'15%',
-        height:'8%',
-        alignSelf:'center',
-        borderRadius:25,
-        justifyContent:'center'
-    }
-});
-
-
-
 
 export default function boardPage({ route, navigation }) {
     const [fam_notes, setFamNotes] = useState([]);
@@ -149,6 +50,8 @@ export default function boardPage({ route, navigation }) {
     const [isSelected, setSelected] = useState([])
     const [isTabVisible, setTabVisible] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
+    const [fontsLoaded] = useFonts({ Inter_900Black, Inter_500Medium, Inter_400Regular, Inter_200ExtraLight })
+
 
 
     const fetchFamNotes = (urlFamNotes) => {
@@ -497,7 +400,7 @@ const setFamNotesAgain=async()=>{
         }
     };
 
-    if (fam_notes === undefined || curret_user_notes === undefined) {
+    if ((fam_notes === undefined || curret_user_notes === undefined)||!fontsLoaded) {
         return <AppLoading />
     } else
         return (
@@ -506,16 +409,15 @@ const setFamNotesAgain=async()=>{
                 >
 
                     <View style={styles.Wrapper}>
-                        <LinearGradient
-                            colors={['rgba(0,0,0,0.8)', 'transparent']}>
+
                             <View>
-                                <Button title="register" onPress={() => navigation.navigate('Register')}></Button>
-                                <Button title="login" onPress={() => navigation.navigate('Login')}></Button>
-                                <Text>All Tasks</Text>
-                                <Badge status="success" value="ACTIVE" />
+                                {/* <Button title="register" onPress={() => navigation.navigate('Register')}></Button>
+                                <Button title="login" onPress={() => navigation.navigate('Login')}></Button> */}
+                                <Text style={styles.title}>fam_name,Board,</Text>
+                                {/* <Badge status="success" value="ACTIVE" />
                                 <Badge status="error" value="DELETED" />
                                 <Badge status="primary" value="COMPLETED" />
-                                <Badge status="warning" value="PENDING" />
+                                <Badge status="warning" value="PENDING" /> */}
 
 
                                 <View style={{ backgroundColor: 'white', flexDirection: 'row', justifyContent: 'space-evenly', display: isSelected.length === 0 ? 'none' : 'flex' }}><Text>{isSelected.length === 0 ? "" : isSelected.length + " - Selected"}</Text>
@@ -670,26 +572,14 @@ const setFamNotesAgain=async()=>{
                                     <Note_Overlay updateNote={updateNote} toggleOverLayParent={toggleOverlay} navigation={navigation} UpdateStatus={UpdateStatus} note={fam_notes[current]} />
 
                                 </Overlay>
-
-                            
-
                             </View>
 
-
-                      
-                            <TouchableOpacity style={styles.add_btn} onPress={() => navigation.navigate('AddNote', { addNote: (note, users) => addingNote(note, users) })}>
+                            <Pressable> style={styles.add_btn} onPress={() => navigation.navigate('AddNote', { addNote: (note, users) => addingNote(note, users) })}>
                             <Icon
                                 name="add"
                                 color="white"
                             />
-                        </TouchableOpacity>
-                        </LinearGradient>
-
-
-
-
-
-
+                        </Pressable>
 
                     </View>
 
@@ -698,3 +588,105 @@ const setFamNotesAgain=async()=>{
         )
 
 }
+
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: 'red',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderStyle: 'solid',
+        borderWidth: 1,
+        width: 150,
+        height: "100%",
+        marginTop: 50
+
+
+    },
+    containerNote: {
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderStyle: 'solid',
+        borderWidth: 1,
+        width: 150,
+        height: 150,
+        borderRadius: 15,
+        marginTop: 30,
+    },
+    noteRow: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-evenly'
+
+    },
+    notesWrapper: {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        alignItems: 'center',
+
+        justifyContent: 'space-evenly',
+        height: '65%'
+
+
+    },
+    Wrapper: {
+        height: Dimensions.get('window').height,
+        // overflow:'scroll'
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22
+    },
+    modalView: {
+        // margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        width: '40%',
+        height: '20%',
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
+    button: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2
+    },
+    buttonOpen: {
+        backgroundColor: "#F194FF",
+    },
+    buttonClose: {
+        backgroundColor: "#2196F3",
+    },
+    textStyle: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center"
+    },
+    modalText: {
+        // marginBottom: 15,
+        textAlign: "center"
+    },
+    add_btn:{
+        backgroundColor:'orange',
+        width:'15%',
+        height:'8%',
+        alignSelf:'center',
+        borderRadius:25,
+        justifyContent:'center'
+    },
+    title:{
+        fontSize:30,
+        fontFamily:"Inter_900Black"
+    }
+});
