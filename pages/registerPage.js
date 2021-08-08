@@ -157,7 +157,6 @@ export default function registerPage({ navigation }) {
                     return Promise.resolve(res.json())
                     //navigation.navigate('RegisterFamily',user);
                 }
-                return res.json();
             }
         ).then((res)=>{
             Alert.alert("Registartion Completed.")

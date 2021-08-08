@@ -35,6 +35,7 @@ export default function RegisterFamily({ route, navigation }) {
     const responseListener = useRef();
 
     const [fontsLoaded] = useFonts({ Inter_900Black, Inter_500Medium, Inter_400Regular, Inter_200ExtraLight })
+    const [username,setUsername] = useState()
     const [fam_ID, setFamID] = useState("");
     const [family_name, setFamilyName] = useState("");
 
@@ -44,8 +45,9 @@ export default function RegisterFamily({ route, navigation }) {
 
     useEffect(() => {
 
-        console.log(route.params.user);
-        
+        setUsername(route.params.user.username);
+        console.log(username);
+
         registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
         console.log(expoPushToken);
 
@@ -184,13 +186,11 @@ export default function RegisterFamily({ route, navigation }) {
         if (!create_success) {
             ToastAndroid.show("Family name not avilable", ToastAndroid.LONG)
             return;
-        }
-        let username = "Test445";
-        let user  = route.params.user;
+        } 
 
         let member = {
             "fam_ID": fam_ID,
-            "username": user.username,
+            "username": username,
             "role": "",
             "isAdmin": isAdmin,
             "isApproved": isApproved,
@@ -212,7 +212,7 @@ export default function RegisterFamily({ route, navigation }) {
             }
             else {
                 //ToastAndroid.show("SomeThing went wrong..ADD MEMBER" + res.statusText, ToastAndroid.LONG)
-                return Promise.reject(new Error(res.status))
+                return Promise.reject(new Error(res.body))
             }
 
         }).then(body => {
@@ -227,8 +227,7 @@ export default function RegisterFamily({ route, navigation }) {
 
     async function RequestAdminPermmision() {
 
-        let mock_id = "cohen222"
-        let url_get_fam_members = "http://ruppinmobile.tempdomain.co.il/site09/api/Family/GetAdminsTokens/" + fam_ID;
+        let url_get_fam_members = "http://ruppinmobile.tempdomain.co.il/site09/api/Family/GetAdminsTokens/"+fam_ID 
         let mem_arr = undefined;
 
         await fetch(url_get_fam_members, {
@@ -236,17 +235,17 @@ export default function RegisterFamily({ route, navigation }) {
         }).then((res) => {
             console.log(res.status);
 
-            if (res.status < 204)
+            if (res.status == 200)
                 return Promise.resolve(res.json())
             else
-                return Promise.reject(new Error(res.statusText))
+                return Promise.reject(new Error(res.status))
         }
         ).then(res => {
             console.log("res " + res);
 
             mem_arr = res;
         }).catch(ex => {
-            console.log("catch" + ex);
+            console.log("catch " + ex);
         })
 
 
@@ -254,6 +253,7 @@ export default function RegisterFamily({ route, navigation }) {
             for (let index = 0; index < mem_arr.length; index++) {
                 const t = mem_arr[index];
                 if (t.length > 4) {
+                    console.log(t);
                     PushNotification(t)
                 }
 
@@ -262,12 +262,10 @@ export default function RegisterFamily({ route, navigation }) {
 
     }
 
-    async function PushNotification(token) {
+    async function PushNotification(token,name) {
         let push_url = "https://exp.host/--/api/v2/push/send"
         // let username = route.params.user.username
-        let username = route.params.user.username;
-
-
+        
         const message = {
             to: token,
             sound: 'default',

@@ -16,7 +16,7 @@ import { Dialog } from 'react-native-paper';
 export default function loginPage({ navigation }) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    //const [fam_list, setFamList] = useState([]);
+    const [fam_list, setFamList] = useState([]);
     const [btn_pressed, setBtnPressed] = useState(false);
     const [fontsLoaded] = useFonts({ Inter_900Black, Inter_500Medium, Inter_400Regular, Inter_300Light, Inter_200ExtraLight })
     const [loginError, setLoginError] = useState("");
@@ -43,8 +43,9 @@ export default function loginPage({ navigation }) {
             console.log(res);
             if (res.password == password) {
                 //ToastAndroid.show("Welcome " + username, ToastAndroid.LONG)
-                //navigation.navigate("Board", res);
-                //GetFamList();
+                GetFamList();
+                navigation.navigate("SelectFamily", {username:username,fam_list:fam_list});
+                
             }
             else {
                 setLoginError("Incorrect password")
@@ -55,8 +56,7 @@ export default function loginPage({ navigation }) {
     }
 
     async function GetFamList() {
-        let ID = "Eldad22"
-        let url_get_fam_list = "http://ruppinmobile.tempdomain.co.il/site09/api/User/families/" + ID;
+        let url_get_fam_list = "http://ruppinmobile.tempdomain.co.il/site09/api/User/families/" + username;
         let lst = [];
 
         await fetch(url_get_fam_list, {
@@ -73,17 +73,17 @@ export default function loginPage({ navigation }) {
             console.log(data);
         }).catch(ex => {
             console.log("ex =" + ex);
-            if (ex == 204) {
-                Alert.alert("No Family was found", "would you like to create Or join exsiting family?", [
-                    {
-                        text: "cancel",
-                        onPress: () => { navigation.navigate("board", { "username": username, "fam_id": undefined }) }
-                    }, {
-                        text: "OK",
-                        onPress: () => { navigation.navigate("RegisterFamily", username) }
-                    }
-                ])
-            }
+            // if (ex == 204) {
+            //     Alert.alert("No Family was found", "would you like to create Or join exsiting family?", [
+            //         {
+            //             text: "cancel",
+            //             onPress: () => { navigation.navigate("board", { "username": username, "fam_id": undefined }) }
+            //         }, {
+            //             text: "OK",
+            //             onPress: () => { navigation.navigate("RegisterFamily", username) }
+            //         }
+            //     ])
+            // }
 
         })
 
