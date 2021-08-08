@@ -53,10 +53,10 @@ export default function SelectFamily({ route, navigation }) {
     useEffect(() => {
         // (async () => {
         //     setUsername(route.params.username)
-            
+
         //     GetFamilies()
         // })
-        setUsername(route.params.fam_list)
+        setUsername(route.params.username)
         setFamList(route.params.fam_list)
         console.log(route.params.fam_list)
 
@@ -88,12 +88,18 @@ export default function SelectFamily({ route, navigation }) {
             setFamList(lst)
         }
     }
-    if (!fontsLoaded )
+    if (!fontsLoaded)
         return <AppLoading />
     else if (fam_lst == undefined)
-        return (<Pressable style={styles.btn}>
-            <Text style={styles.btn_txt}>no family</Text>
-        </Pressable>)
+        return (
+        <Pressable
+        onPress={()=>{navigation.navigate("RegisterFamily",{user:{
+            username:username
+        }})}}
+        style={styles.btn}>
+                <Text style={styles.btn_txt}>Create Or Join</Text>
+        </Pressable>
+        )
     else
         return (
             <SafeAreaView>
