@@ -235,6 +235,7 @@ export default function boardPage({ route, navigation }) {
             fetchFamNotes(urlFamNotes)
 
             fetchUsersNotes(urlCurrentNotes)
+            setFamNotesAgain()
         } catch (error) {
             console.log(error)
         }
@@ -404,7 +405,7 @@ export default function boardPage({ route, navigation }) {
 
     const UpdateStatus = (status) => {
         console.log(fam_notes[current].note_id);
-        let url = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/status/" + fam_notes[current].note_id + "/" + status
+        let url = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/status/" + fam_notes[current].id + "/" + status
 
         fetch(url,
             {
@@ -424,6 +425,7 @@ export default function boardPage({ route, navigation }) {
             (result) => {
                 console.log(result)
                 fam_notes[current].status = status
+                setFamNotes(fam_notes)
             },
             (error) =>
                 alert(error)
