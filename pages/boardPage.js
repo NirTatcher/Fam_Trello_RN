@@ -235,17 +235,11 @@ export default function boardPage({ route, navigation }) {
             fetchFamNotes(urlFamNotes)
 
             fetchUsersNotes(urlCurrentNotes)
-            setFamNotesAgain()
+            // setFamNotesAgain()
         } catch (error) {
             console.log(error)
         }
-
-
-
-
         console.log(fam_notes);
-
-
         return () => {
             console.log("clean up");
         }
@@ -268,34 +262,33 @@ export default function boardPage({ route, navigation }) {
             await setFamNotes(famTemp)
             await setCurrentUserNotes(user_notes)
         }
-
     }
-    const closeConnection=()=>{
+    const closeConnection = () => {
         fetch('http://ruppinmobile.tempdomain.co.il/site09/api/User/close_con',
-        {
-            method: 'GET',
-            
-            headers: new Headers({
-                'accept': 'application/json; charset=UTF-8',
-                'Content-type': 'application/json; charset=UTF-8'
-            })
+            {
+                method: 'GET',
 
-        }
+                headers: new Headers({
+                    'accept': 'application/json; charset=UTF-8',
+                    'Content-type': 'application/json; charset=UTF-8'
+                })
 
-    ).then(
-        res => {
-        
-            return res.json()
-            
-        }
-    ).then(
-        (result) => {
-            console.log(result);
-        },
-        (error) =>
-            console.log("errrorr")
+            }
 
-    ) 
+        ).then(
+            res => {
+
+                return res.json()
+
+            }
+        ).then(
+            (result) => {
+                console.log(result);
+            },
+            (error) =>
+                console.log("errrorr")
+
+        )
     }
     const addingNote = (note) => {
 
@@ -313,44 +306,44 @@ export default function boardPage({ route, navigation }) {
 
         ).then(
             res => {
-               
+
                 return res.json()
-                
+
             }
         ).then(
             (result) => {
                 console.log(result);
             },
-            (error) =>
-            {    
-                console.log(error)}
+            (error) => {
+                console.log(error)
+            }
 
         )
         // let notesCurrent = curret_user_notes
         // let notesFam = fam_notes
-     
-     
-          
-       
-      
-       
-       
-            // notesCurrent=[...notesCurrent,note]
+
+
+
+
+
+
+
+        // notesCurrent=[...notesCurrent,note]
         // notesCurrent?.push(note)
         // notesFam?.push(note)
         // noteFam = [...notesFam,note]
         // setCurrentUserNotes(notesCurrent)
         // setFamNotes(notesFam)
-    
-       if(curret_user_notes.length>0)
-        setCurrentUserNotes([curret_user_notes,note])
-        if(fam_notes===undefined|| fam_notes===null || fam_notes===[] || fam_notes===""){
-               if(fam_notes.length>0)
-        setFamNotes([fam_notes,note])
+
+        if (curret_user_notes.length > 0)
+            setCurrentUserNotes([curret_user_notes, note])
+        if (fam_notes === undefined || fam_notes === null || fam_notes === [] || fam_notes === "") {
+            if (fam_notes.length > 0)
+                setFamNotes([fam_notes, note])
         }
-     
-    
-    
+
+
+
 
 
     }
@@ -384,10 +377,10 @@ export default function boardPage({ route, navigation }) {
                 return res.json()
             }
         ).then(
-           async (result) => {
+            async (result) => {
                 let fam_notes_temp = fam_notes
                 fam_notes_temp = fam_notes_temp.filter(n => n.id !== id)
-               await setFamNotes(fam_notes_temp)
+                await setFamNotes(fam_notes_temp)
             },
             (error) =>
                 alert(error)
@@ -483,14 +476,14 @@ export default function boardPage({ route, navigation }) {
         //   route.params.setInVisible()
     }
 
-    const deleteNotes = async(notes) => {
-     
+    const deleteNotes = async (notes) => {
+
         for (let index = 0; index < notes.length; index++) {
-           
+
             const noteNum = notes[index];
-          await  deleteNote(fam_notes[noteNum].id);
+            await deleteNote(fam_notes[noteNum].id);
         }
-      await  setSelected([]);
+        await setSelected([]);
     }
 
     const AreYouSure = async (numOfFiles) => {
@@ -545,11 +538,11 @@ export default function boardPage({ route, navigation }) {
             >
 
                 <View style={styles.Wrapper}>
-                    {fam_notes === undefined || fam_notes===[]||fam_notes==={} ?
+                    {fam_notes === undefined || fam_notes === [] || fam_notes === {} ?
                         <LinearGradient
                             colors={['rgba(0,0,0,0.8)', 'transparent']}>
                             <View>
-                               
+
                                 <Button title="register" onPress={() => navigation.navigate('Register')}></Button>
                                 <Button title="login" onPress={() => navigation.navigate('Login')}></Button>
                                 <Text>All Tasks</Text>
@@ -567,15 +560,15 @@ export default function boardPage({ route, navigation }) {
                                         name="delete"
                                         color="black" />
                                 </View>
-                                <TouchableOpacity  onPress={() => navigation.navigate('AddNote', { addNote: (note) => addingNote(note),user:username,fam:fam_ID })}>
-                                <View style={styles.notesWrapper}>
-                                <View style={styles.containerNote}>
-                                
-                                <ListItem.Title>No Notes Yet</ListItem.Title>
-                                <ListItem.Subtitle>Add a note!</ListItem.Subtitle>
-                                </View>
-                                </View>
-                                
+                                <TouchableOpacity onPress={() => navigation.navigate('AddNote', { addNote: (note) => addingNote(note), user: username, fam: fam_ID })}>
+                                    <View style={styles.notesWrapper}>
+                                        <View style={styles.containerNote}>
+
+                                            <ListItem.Title>No Notes Yet</ListItem.Title>
+                                            <ListItem.Subtitle>Add a note!</ListItem.Subtitle>
+                                        </View>
+                                    </View>
+
                                 </TouchableOpacity>
 
 
@@ -633,25 +626,6 @@ export default function boardPage({ route, navigation }) {
                                                     }
                                                     <Text>{new Date(l.created).toDateString()}</Text>
                                                     <Text>{l.title}</Text>
-
-                                                    {/* {curret_user_notes?.find?.(n => n.title === l.title) !== undefined ?
-                                                        <View style={{ flexDirection: 'row' }}>
-
-                                                            <Icon
-                                                                name="edit"
-                                                                color="black"
-                                                                onPress={() => navigation.navigate("EditNote", { note: l, update: (note) => updateNote(note) })}
-                                                            />
-
-                                                            <Icon
-                                                                onPress={() => deleteNote(l.note_id)}
-                                                                name="delete"
-                                                                color="black"
-                                                            />
-                                                        </View> : null
-                                                    } */}
-
-
 
 
                                                     <ListItem.Subtitle>{l.text}</ListItem.Subtitle>
@@ -763,7 +737,7 @@ export default function boardPage({ route, navigation }) {
 
 
 
-                            <TouchableOpacity style={styles.add_btn} onPress={() => navigation.navigate('AddNote', { addNote: (note) => addingNote(note),user:username,fam:fam_ID })}>
+                            <TouchableOpacity style={styles.add_btn} onPress={() => navigation.navigate('AddNote', { addNote: (note) => addingNote(note), user: username, fam: fam_ID })}>
                                 <Icon
                                     name="add"
                                     color="white"
