@@ -134,7 +134,7 @@ export default function profilePage({ route, navigation }) {
             <TextInput onChangeText={(e) => setUser(e)} value={username} placeholder="username" />
             <TextInput onChangeText={(e) => setEmail(e)} value={email} placeholder="email" />
             <TextInput onChangeText={(e) => setPass(e)} value={pass} placeholder="pass" />
-            <TextInput onChangeText={(e) => setRePass(e)} value={pass} placeholder="re-pass" />
+            <TextInput onChangeText={(e) => setRePass(e)} value={rePass} placeholder="re-pass" />
             <TextInput onChangeText={(e) => setAge(e)} value={age.toString()} placeholder="age" />
 
             <View>
