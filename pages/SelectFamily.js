@@ -23,7 +23,9 @@ const styles = StyleSheet.create({
 
     },
     title: {
-        fontSize: 40
+        fontSize: 40,
+        fontFamily:"Inter_900Black",
+        marginBottom:20
     },
     btn: {
         borderLeftWidth: 10,
@@ -37,7 +39,7 @@ const styles = StyleSheet.create({
     btn_txt: {
         padding: 10,
         fontFamily: "Inter_500Medium",
-        fontSize: 50,
+        fontSize: 30,
         color: "pink"
     }
 
@@ -80,8 +82,6 @@ export default function SelectFamily({ route, navigation }) {
             console.log(data);
         }).catch(ex => {
             console.log(ex);
-
-
         })
 
         if (lst != undefined && lst.length > 0) {
@@ -90,20 +90,28 @@ export default function SelectFamily({ route, navigation }) {
     }
     if (!fontsLoaded)
         return <AppLoading />
-    else if (fam_lst == undefined)
+    else {
+        if (fam_lst == undefined)
         return (
-        <Pressable
-        onPress={()=>{navigation.navigate("RegisterFamily",{user:{
-            username:username
-        }})}}
-        style={styles.btn}>
-                <Text style={styles.btn_txt}>Create Or Join</Text>
-        </Pressable>
+            <SafeAreaView>
+                <Text style={styles.title}>Select Family</Text>
+                <Pressable
+                    onPress={() => {
+                        navigation.navigate("RegisterFamily", {
+                            user: {
+                                username: username
+                            }
+                        })
+                    }}
+                    style={styles.btn}>
+                    <Text style={styles.btn_txt}>Create Or Join?</Text>
+                </Pressable>
+            </SafeAreaView>
         )
     else
         return (
             <SafeAreaView>
-                <Text style={styles.title}></Text>
+                <Text style={styles.title}>Select Family</Text>
                 {fam_lst.map(fam => (
                     <Pressable
                         key={fam}
@@ -115,4 +123,7 @@ export default function SelectFamily({ route, navigation }) {
                 ))}
             </SafeAreaView>
         )
+
+      
+    }
 }

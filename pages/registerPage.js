@@ -62,16 +62,19 @@ const classes = StyleSheet.create(
             alignSelf: 'center'
         },
         Btn: {
+            backgroundColor:"#eae4e9",
+            marginTop:20,
+            borderStyle:"solid",
+            borderWidth:0.5,
             margin: 5,
-            backgroundColor: '#b5d6d6',
             borderRadius: 7,
-            borderRightColor: "#3D5467",
-            borderRightWidth: 2,
             borderTopRightRadius: 10,
             borderBottomWidth: 3,
-            borderBottomColor: "#3D5467"
+            borderBottomColor: "#3D5467",
+            textAlign:"center"
         },
         BtbText: {
+            alignSelf:"center",
             padding: 7,
             fontSize: 20,
             fontFamily: 'Inter_500Medium'
@@ -150,12 +153,10 @@ export default function registerPage({ navigation }) {
             res => {
                 console.log(res.status)//true
                 if (res.status !== 201) {
-                    //Alert.alert("we might have a problem.." + res.status);
                     return Promise.reject(new Error(res.statusText));
                 }
                 else {
                     return Promise.resolve(res.json())
-                    //navigation.navigate('RegisterFamily',user);
                 }
             }
         ).then((res)=>{
@@ -168,8 +169,7 @@ export default function registerPage({ navigation }) {
 
 
         if(reg_succ){
-            //registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
-            //alert(token)
+
             navigation.navigate('RegisterFamily',{user:user});
         }else{
             ToastAndroid.show("username taken OR invalid details")
@@ -179,9 +179,7 @@ export default function registerPage({ navigation }) {
     }
 
     const ErrHandler = useCallback((field) => {
-        let err = errors;
-        console.log(field);
-        
+        let err = errors;        
         switch (field) {
             case 'username':
                 if (username.length < 4) {
@@ -245,12 +243,9 @@ export default function registerPage({ navigation }) {
                 <View style={classes.Wrapper}>
                     <Button
                         title="RegisterFam page"
-                        onPress={() => { navigation.navigate("RegisterFamily") }}></Button>
-                    {/* <LinearGradient
-                        end={{ x: 0.7, y: 1 }}
-                        locations={[0.8, 1]}
-                        colors={['rgb(131, 197, 190)', 'rgb(248, 249, 250)']} // Background Linear Gradient
-                    > */}
+                        onPress={() => { navigation.navigate("RegisterFamily",{user:{
+                            username:"ellll5"
+                        }}) }}/>
                     <ScrollView onPress={Keyboard.dismiss} accessible={false} >
                         <View style={classes.header}>
                             <Text style={classes.title}>Join FamTrello</Text>
@@ -275,13 +270,6 @@ export default function registerPage({ navigation }) {
                                 <Input
                                     containerStyle={{ borderColor: "black", shadowColor: "black" }}
                                     inputStyle={{ color: "black", textShadowColor: "black" }}
-                                    // leftIcon={
-                                    //     <EntIcon
-                                    //         name='user'
-                                    //         size={20}
-                                    //         color='black'
-                                    //     />
-                                    // }
                                     label="Enter Username"
                                     labelStyle={{ color: "black" }}
                                     errorStyle={{ color: "red" }}
@@ -291,13 +279,6 @@ export default function registerPage({ navigation }) {
                                     onEndEditing={(e) => ErrHandler('username')}
                                 />
                                 <Input
-                                    // leftIcon={
-                                    //     <EntIcon
-                                    //         name='info'
-                                    //         size={20}
-                                    //         color='black'
-                                    //     />
-                                    // }
                                     label="Enter Name"
                                     labelStyle={{ color: "black" }}
                                     errorStyle={{ color: "red" }}
@@ -307,13 +288,6 @@ export default function registerPage({ navigation }) {
                                     onEndEditing={(e) => ErrHandler('first_name')}
                                 />
                                 <Input
-                                    // leftIcon={
-                                    //     <EntIcon
-                                    //         name='lock'
-                                    //         size={20}
-                                    //         color='black'
-                                    //     />
-                                    // }
                                     label="Enter Password"
                                     labelStyle={{ color: "black" }}
                                     errorStyle={{ color: "red" }}
@@ -324,13 +298,7 @@ export default function registerPage({ navigation }) {
                                     onEndEditing={(e) => ErrHandler('password')}
                                 />
                                 <Input
-                                    // leftIcon={
-                                    //     <EntIcon
-                                    //         name='lock-open'
-                                    //         size={20}
-                                    //         color='black'
-                                    //     />
-                                    // }
+
                                     label="Re-Enter Password"
                                     labelStyle={{ color: "black" }}
                                     errorStyle={{ color: "red" }}
@@ -341,13 +309,6 @@ export default function registerPage({ navigation }) {
                                     onEndEditing={(e) => ErrHandler('re_pass')}
                                 />
                                 <Input
-                                    // leftIcon={
-                                    //     <EntIcon
-                                    //         name='email'
-                                    //         size={20}
-                                    //         color='black'
-                                    //     />
-                                    // }
                                     label="Enter Email"
                                     labelStyle={{ color: "black" }}
                                     errorStyle={{ color: "red" }}
@@ -376,7 +337,6 @@ export default function registerPage({ navigation }) {
                             </View>
                         </View>
                     </ScrollView>
-                    {/* </LinearGradient> */}
                 </View>
             </SafeAreaView>
         )

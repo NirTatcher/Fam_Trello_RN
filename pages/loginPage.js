@@ -131,18 +131,24 @@ export default function loginPage({ navigation }) {
                     >
                         <Text style={styles.BtnText}>REGISTER</Text>
                     </Pressable> */}
-                    <Button
+                    <Pressable
+                    style={styles.Btn}
+                    >
+                        <Text style={styles.BtnText}>SIGN IN</Text>
+                    </Pressable>
+                    {/* <Button
                         title="sign in"
                         onPress={Login}
                     />
                     <Button
                     title = "selectfam"
-                    onPress={()=>{navigation.navigate("SelectFamily")}}
-                    />
+                    onPress={()=>{navigation.navigate("SelectFamily",{username:"mock"})}}
+                    /> */}
                     <Pressable
                     onPress ={()=>{navigation.navigate("Register")}}
                     style={styles.register_btn}>
-                        <Text>new here? Register</Text>
+                        <Text >new member?</Text>
+                        <Text style ={ styles.register_btn_txt}>REGISTER</Text>
                     </Pressable>
 
                 </View>
@@ -163,7 +169,8 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 40,
-        fontFamily: "Inter_900Black"
+        fontFamily: "Inter_900Black",
+        color:"#0a9396"
     },
     sub_title: {
         fontSize: 20,
@@ -185,20 +192,28 @@ const styles = StyleSheet.create({
         margin: 10
     },
     Btn: {
+        backgroundColor:"#eae4e9",
+        marginTop:20,
+        borderStyle:"solid",
+        borderWidth:0.5,
         margin: 5,
-        backgroundColor: '#b5d6d6',
         borderRadius: 7,
-        borderRightColor: "#3D5467",
         borderTopRightRadius: 10,
-        borderBottomColor: "#3D5467"
+        borderBottomWidth: 3,
+        borderBottomColor: "#3D5467",
     },
     BtnText: {
-        textAlign: 'center',
+        alignSelf:"center",
         padding: 7,
         fontSize: 20,
-        fontFamily: 'notoserif'
+        fontFamily: "Inter_500Medium"
+
     },register_btn:{
-        marginTop:30
+        marginTop:100
+    },register_btn_txt:{
+        fontSize:20,
+        color: "#005f73",
+        fontFamily:"Inter_500Medium"
     }
 
 })

@@ -270,7 +270,7 @@ export default function RegisterFamily({ route, navigation }) {
             to: token,
             sound: 'default',
             title: 'New Family Member',
-            body: 'Hi,' + username + ' would like to join the Family.\nApprove?',
+            body: 'Hi,Theres a New member waiting for approval.',
             data: { someData: 'goes here' },
         };
 
@@ -341,7 +341,7 @@ export default function RegisterFamily({ route, navigation }) {
                         />
                         <Text
                             style={styles.txt_err_server}
-                        >error</Text>
+                        ></Text>
                         <FontAwesome.Button
                             style={styles.join_btn}
                             backgroundColor="#2a9d8f"
@@ -353,29 +353,15 @@ export default function RegisterFamily({ route, navigation }) {
 
                 </View>
 
-                <Button
+                {/* <Button
                     onPress={RequestAdminPermmision}
                     title="RequestAdminPermmision"
                 ></Button>
                 <Button
                     onPress={PushNotification}
                     title="send push notificationadn"
-                ></Button>
+                ></Button> */}
 
-                <View
-                    style={{
-                        // flex: 1,
-                        // alignItems: 'center',
-                        // justifyContent: 'space-around',
-                    }}>
-                    <Text>Your expo push token: {expoPushToken}</Text>
-                    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                        <Text>Title: {notification && notification.request.content.title} </Text>
-                        <Text>Body: {notification && notification.request.content.body}</Text>
-                        <Text>Data: {notification && JSON.stringify(notification.request.content.data)}</Text>
-                    </View>
-
-                </View>
             </SafeAreaView>
         )
 }
