@@ -6,7 +6,6 @@ import { Inter_900Black, Inter_500Medium, Inter_400Regular, Inter_300Light, Inte
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Dialog } from 'react-native-paper';
 import AppLoading from 'expo-app-loading';
-import { ScrollView, State } from 'react-native-gesture-handler';
 
 
 const styles = StyleSheet.create({
@@ -24,15 +23,13 @@ const styles = StyleSheet.create({
 
     },
     title: {
-        fontSize: 40,
-        fontFamily: "Inter_900Black",
-        marginBottom: 20
+        fontSize: 40
     },
     btn: {
-        borderRadius: 10,
+        borderLeftWidth: 10,
         width: Dimensions.get("window").width * 0.8,
         borderBottomWidth: 10,
-        margin: 10,
+        marginBottom: 5,
         backgroundColor: "grey",
         alignSelf: "center",
 
@@ -40,8 +37,8 @@ const styles = StyleSheet.create({
     btn_txt: {
         padding: 10,
         fontFamily: "Inter_500Medium",
-        fontSize: 30,
-        color: "#48cae4"
+        fontSize: 50,
+        color: "pink"
     }
 
 })
@@ -52,86 +49,70 @@ export default function SelectFamily({ route, navigation }) {
     const server = "http://ruppinmobile.tempdomain.co.il/site09/"
     const [fam_lst, setFamList] = useState();
     const [username, setUsername] = useState();
-    const [mounted, setMounted] = useState(false)
 
     useEffect(() => {
-        console.log("eee");
+        // (async () => {
+        //     setUsername(route.params.username)
 
+        //     GetFamilies()
+        // })
         setUsername(route.params.username)
         setFamList(route.params.fam_list)
-        setMounted(true)
-
-        return function cleanup() {
-            setMounted(false)
-        }
-
+        console.log(route.params.fam_list)
 
     }, [])
 
-    // async function GetFamilies() {
-    //     let url_get_fam_list = "http://ruppinmobile.tempdomain.co.il/site09/api/User/families/" + username;
-    //     let lst = [];
+    async function GetFamilies() {
+        let url_get_fam_list = "http://ruppinmobile.tempdomain.co.il/site09/api/User/families/" + username;
+        let lst = [];
 
-    //     await fetch(url_get_fam_list, {
-    //         method: "GET"
-    //     }).then(res => {
-    //         if (res.status == 200)
-    //             return Promise.resolve(res.json())
-    //         else if (res.status == 204)
-    //             return Promise.reject(res.status)
-    //         else
-    //             return Promise.reject(res.statusText)
-    //     }).then(data => {
-    //         lst = data;
-    //         console.log(data);
-    //     }).catch(ex => {
-    //         console.log(ex);
-    //     })
-
-    //     if (lst != undefined && lst.length > 0) {
-    //         setFamList(lst)
-    //     }
-    // }
+        await fetch(url_get_fam_list, {
+            method: "GET"
+        }).then(res => {
+            if (res.status == 200)
+                return Promise.resolve(res.json())
+            else if (res.status == 204)
+                return Promise.reject(res.status)
+            else
+                return Promise.reject(res.statusText)
+        }).then(data => {
+            lst = data;
+            console.log(data);
+        }).catch(ex => {
+            console.log(ex);
 
 
-    if (!fontsLoaded && !mounted)
-        return <AppLoading />
-    else {
-        if (fam_lst == undefined || fam_lst.count == 0)
-            return (
-                <SafeAreaView>
-                    <ScrollView>
-                        <Text style={styles.title}>Select Family</Text>
-                        <Pressable
-                            onPress={() => {
-                                navigation.navigate("RegisterFamily", {
-                                    user: {
-                                        username: username
-                                    }
-                                })
-                            }}
-                            style={styles.btn}>
-                            <Text style={styles.btn_txt}>Create Or Join?</Text>
-                        </Pressable>
-                    </ScrollView>
-                </SafeAreaView>
-            )
-        else
-            return (
-                <SafeAreaView>
-                    <Text style={styles.title}>Select Family</Text>
-                    {fam_lst.map(fam => (
-                        <Pressable
-                            key={fam}
-                            onPress={() => { navigation.navigate('Board', { "username": username, "fam_ID": fam }) }}
-                            style={styles.btn}>
-                            <Text style={styles.btn_txt}>{fam}</Text>
-                        </Pressable >
+        })
 
-                    ))}
-                </SafeAreaView>
-            )
-
-
+        if (lst != undefined && lst.length > 0) {
+            setFamList(lst)
+        }
     }
+    if (!fontsLoaded)
+        return <AppLoading />
+    else if (fam_lst == undefined)
+        return (
+        <Pressable
+        onPress={()=>{navigation.navigate("RegisterFamily",{user:{
+            username:username
+        }})}}
+        style={styles.btn}>
+                <Text style={styles.btn_txt}>Create Or Join</Text>
+        </Pressable>
+        )
+    else
+        return (
+            <SafeAreaView>
+                <Text style={styles.title}></Text>
+                {fam_lst.map(fam => (
+                    <Pressable
+                        key={fam}
+                        onPress={() => { navigation.navigate('Drawer', { "username": username, "fam_ID": fam }) }}
+                        style={styles.btn}>
+                        <Text style={styles.btn_txt}>{fam}</Text>
+                    </Pressable >
+
+                ))}
+            </SafeAreaView>
+        )
 }

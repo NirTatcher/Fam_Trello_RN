@@ -12,8 +12,6 @@ import Note_Overlay from './Note_Overlay';
 import { Input } from 'react-native-elements/dist/input/Input';
 import { log } from 'react-native-reanimated';
 import { CheckBox, I18nManager } from 'react-native';
-import { useFonts } from 'expo-font';
-import { Inter_900Black, Inter_500Medium, Inter_400Regular, Inter_200ExtraLight } from '@expo-google-fonts/inter';
 
 import {
     SafeAreaView,
@@ -37,21 +35,120 @@ const mock_user = {
 }
 
 
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: 'red',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderStyle: 'solid',
+        borderWidth: 1,
+        width: 150,
+        height: "100%",
+        marginTop: 50
+
+
+    },
+    containerNote: {
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderStyle: 'solid',
+        borderWidth: 1,
+        width: 150,
+        height: 150,
+        borderRadius: 15,
+        marginTop: 30,
+    },
+    noteRow: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-evenly'
+
+    },
+    notesWrapper: {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        alignItems: 'center',
+
+        justifyContent: 'space-evenly',
+        height: '65%'
+
+
+    },
+    Wrapper: {
+        height: Dimensions.get('window').height,
+        backgroundColor: '#491c0b',
+        // overflow:'scroll'
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22
+    },
+    modalView: {
+        // margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        width: '40%',
+        height: '20%',
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
+    button: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2
+    },
+    buttonOpen: {
+        backgroundColor: "#F194FF",
+    },
+    buttonClose: {
+        backgroundColor: "#2196F3",
+    },
+    textStyle: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center"
+    },
+    modalText: {
+        // marginBottom: 15,
+        textAlign: "center"
+    },
+    add_btn: {
+        backgroundColor: 'orange',
+        width: '15%',
+        height: '8%',
+        alignSelf: 'center',
+        borderRadius: 25,
+        justifyContent: 'center'
+    }
+});
+
+
+
 
 export default function boardPage({ route, navigation }) {
     const [fam_notes, setFamNotes] = useState([]);
     const [curret_user_notes, setCurrentUserNotes] = useState([])
-    const [username, setUser] = useState("david22")
+    const [username, setUser] = useState("")
     const [visible, setVisible] = useState(false);
     const [current, setCurrent] = useState(0);
-    const [fam_ID, setFamID] = useState("cohen222");
+    const [fam_ID, setFamID] = useState("");
     const myStatusKinds = ["ACTIVE", "PENDING", "COMPLETED", "DELETED"]
     const statusKinds = ["success", "warning", "primary", "error"]
     const [isSelected, setSelected] = useState([])
     const [isTabVisible, setTabVisible] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
-    const [fontsLoaded] = useFonts({ Inter_900Black, Inter_500Medium, Inter_400Regular, Inter_200ExtraLight })
-
 
 
     const fetchFamNotes = (urlFamNotes) => {
@@ -73,22 +170,21 @@ export default function boardPage({ route, navigation }) {
         ).then(
             (result) => {
                 // setFamNotes(result)
-                let notes=[]
-                if(route.params.type!=="All"){
-                for (let index = 0; index < result.length; index++) {
-                    const element = result[index];
-                    if(element.status === new String(route.params.type).toUpperCase()){
-                       notes.push(element)
-                        
+                let notes = []
+                if (route.params.type !== "All") {
+                    for (let index = 0; index < result.length; index++) {
+                        const element = result[index];
+                        if (element.status === new String(route.params.type).toUpperCase()) {
+                            notes.push(element)
+                        }
+
                     }
-                    
-                }
-                if(notes!==[]){
+
                     setFamNotes(notes)
+
                 }
-            }
                 else
-                setFamNotes(result)
+                    setFamNotes(result)
 
             },
             (err) => {
@@ -125,19 +221,29 @@ export default function boardPage({ route, navigation }) {
     }
 
     useEffect(() => {
+        while (route.params.usernameUnique === undefined) {
+            console.log("--")
+        }
+        setUser(route.params.usernameUnique)
+        setFamID(route.params.famIDUnique)
         I18nManager.allowRTL(false);
         I18nManager.forceRTL(false);
-        let urlFamNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/family/cohen222";
+        let urlFamNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/family/" + fam_ID;
         let urlCurrentNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/user/" + username;
 
+        try {
+            fetchFamNotes(urlFamNotes)
 
-        // console.log(route.params.type);
-        fetchFamNotes(urlFamNotes)
+            fetchUsersNotes(urlCurrentNotes)
+        } catch (error) {
+            console.log(error)
+        }
 
-        fetchUsersNotes(urlCurrentNotes)
 
 
-      
+
+        console.log(fam_notes);
+
 
         return () => {
             console.log("clean up");
@@ -149,22 +255,48 @@ export default function boardPage({ route, navigation }) {
         alert("You CLicked See Details")
     }
 
-const setFamNotesAgain=async()=>{
-    console.log(new String(route.params.type).toUpperCase())
-    let famTemp=fam_notes
-    let user_notes=curret_user_notes
-    if(famTemp.length!==[] && curret_user_notes!==[])
-   {
-       famTemp.map(t=>t.status === new String(route.params.type).toUpperCase() === false ? famTemp.pop():"")
-       user_notes.map(t=>t.status === new String(route.params.type).toUpperCase() === false ? famTemp.pop():"")
-    // console.log(famTemp.filter(r=>r.status==new String(route.params.type).toUpperCase()))
-    //  famTemp = await famTemp.filter(r=>new String(r.status).toUpperCase()!==new String(route.params.type).toUpperCase())
-   await setFamNotes(famTemp)
-   await setCurrentUserNotes(user_notes)
-   }
-   
-}
-    const addingNote = (note, users) => {
+    const setFamNotesAgain = async () => {
+        console.log(new String(route.params.type).toUpperCase())
+        let famTemp = fam_notes
+        let user_notes = curret_user_notes
+        if (famTemp.length !== [] && curret_user_notes !== []) {
+            famTemp.map(t => t.status === new String(route.params.type).toUpperCase() === false ? famTemp.pop() : "")
+            user_notes.map(t => t.status === new String(route.params.type).toUpperCase() === false ? famTemp.pop() : "")
+            // console.log(famTemp.filter(r=>r.status==new String(route.params.type).toUpperCase()))
+            //  famTemp = await famTemp.filter(r=>new String(r.status).toUpperCase()!==new String(route.params.type).toUpperCase())
+            await setFamNotes(famTemp)
+            await setCurrentUserNotes(user_notes)
+        }
+
+    }
+    const closeConnection=()=>{
+        fetch('http://ruppinmobile.tempdomain.co.il/site09/api/User/close_con',
+        {
+            method: 'GET',
+            
+            headers: new Headers({
+                'accept': 'application/json; charset=UTF-8',
+                'Content-type': 'application/json; charset=UTF-8'
+            })
+
+        }
+
+    ).then(
+        res => {
+        
+            return res.json()
+            
+        }
+    ).then(
+        (result) => {
+            console.log(result);
+        },
+        (error) =>
+            console.log("errrorr")
+
+    ) 
+    }
+    const addingNote = (note) => {
 
 
         fetch('http://ruppinmobile.tempdomain.co.il/site09/api/Note/',
@@ -172,6 +304,7 @@ const setFamNotesAgain=async()=>{
                 method: 'POST',
                 body: JSON.stringify(note),
                 headers: new Headers({
+                    'accept': 'application/json; charset=UTF-8',
                     'Content-type': 'application/json; charset=UTF-8'
                 })
 
@@ -179,48 +312,44 @@ const setFamNotesAgain=async()=>{
 
         ).then(
             res => {
-
+               
                 return res.json()
+                
             }
         ).then(
             (result) => {
                 console.log(result);
             },
             (error) =>
-                console.log("errrorr")
+            {    
+                console.log(error)}
 
         )
-
-        fetch('http://ruppinmobile.tempdomain.co.il/site09/api/Note/tagged/',
-            {
-                method: 'POST',
-                body: JSON.stringify(users),
-                headers: new Headers({
-                    'Content-type': 'application/json; charset=UTF-8'
-                })
-
-            }
-
-        ).then(
-            res => {
-
-                return res.json()
-            }
-        ).then(
-            (result) => {
-                console.log(result);
-            },
-            (error) =>
-                console.log("errrorr")
-
-        )
-        let notesCurrent = curret_user_notes
-        let notesFam = fam_notes
-        notesCurrent.push(note)
-        notesFam.push(note)
-        setCurrentUserNotes(notesCurrent)
-        setFamNotes(notesFam)
-
+        // let notesCurrent = curret_user_notes
+        // let notesFam = fam_notes
+     
+     
+          
+       
+      
+       
+       
+            // notesCurrent=[...notesCurrent,note]
+        // notesCurrent?.push(note)
+        // notesFam?.push(note)
+        // noteFam = [...notesFam,note]
+        // setCurrentUserNotes(notesCurrent)
+        // setFamNotes(notesFam)
+    
+       if(curret_user_notes.length>0)
+        setCurrentUserNotes([curret_user_notes,note])
+        if(fam_notes===undefined|| fam_notes===null || fam_notes===[] || fam_notes===""){
+               if(fam_notes.length>0)
+        setFamNotes([fam_notes,note])
+        }
+     
+    
+    
 
 
     }
@@ -232,7 +361,7 @@ const setFamNotesAgain=async()=>{
 
 
     useEffect(() => {
-        let urlFamNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/family/cohen222";
+        let urlFamNotes = "http://ruppinmobile.tempdomain.co.il/site09/api/Note/family/" + fam_ID;
         fetchFamNotes(urlFamNotes)
     }, [fam_notes])
 
@@ -254,10 +383,10 @@ const setFamNotesAgain=async()=>{
                 return res.json()
             }
         ).then(
-            (result) => {
+           async (result) => {
                 let fam_notes_temp = fam_notes
                 fam_notes_temp = fam_notes_temp.filter(n => n.id !== id)
-                setFamNotes(fam_notes_temp)
+               await setFamNotes(fam_notes_temp)
             },
             (error) =>
                 alert(error)
@@ -310,7 +439,8 @@ const setFamNotesAgain=async()=>{
             {
                 method: 'PUT',
                 headers: new Headers({
-                    'accept': 'application/json; charset=UTF-8'
+                    'accept': 'application/json; charset=UTF-8',
+                    'Content-type': 'application/json; charset=UTF-8'
                 })
                 , body: JSON.stringify(note)
 
@@ -323,7 +453,9 @@ const setFamNotesAgain=async()=>{
         ).then(
             (result) => {
                 console.log(result)
-                fam_notes[current] = note
+                let famTemp = fam_notes
+                famTemp[current] = note
+                setFamNotes(famTemp)
             },
             (error) =>
                 alert(error)
@@ -349,12 +481,14 @@ const setFamNotesAgain=async()=>{
         //   route.params.setInVisible()
     }
 
-    const deleteNotes = (notes) => {
+    const deleteNotes = async(notes) => {
+     
         for (let index = 0; index < notes.length; index++) {
+           
             const noteNum = notes[index];
-            deleteNote(fam_notes[noteNum].note_id);
+          await  deleteNote(fam_notes[noteNum].id);
         }
-        setSelected([]);
+      await  setSelected([]);
     }
 
     const AreYouSure = async (numOfFiles) => {
@@ -381,10 +515,10 @@ const setFamNotesAgain=async()=>{
     const onShare = async (note) => {
         try {
             const result = await Share.share({
-               title:'A message from Fam_Trello!',
+                title: 'A message from Fam_Trello!',
                 message:
-                    "A Note From Fam_Trello |"+ note.title+':  '+ note.text,
-                
+                    "A Note From Fam_Trello |" + note.title + ':  ' + note.text,
+
             });
             if (result.action === Share.sharedAction) {
                 if (result.activityType) {
@@ -400,24 +534,73 @@ const setFamNotesAgain=async()=>{
         }
     };
 
-    if ((fam_notes === undefined || curret_user_notes === undefined)||!fontsLoaded) {
-        return <AppLoading />
-    } else
-        return (
-            <SafeAreaView>
-                <ScrollView
-                >
+    // if (fam_notes === undefined || curret_user_notes === undefined) {
+    //     return <AppLoading />
+    // } else
+    return (
+        <SafeAreaView>
+            <ScrollView
+            >
 
-                    <View style={styles.Wrapper}>
-
+                <View style={styles.Wrapper}>
+                    {fam_notes === undefined || fam_notes===[]||fam_notes==={} ?
+                        <LinearGradient
+                            colors={['rgba(0,0,0,0.8)', 'transparent']}>
                             <View>
-                                {/* <Button title="register" onPress={() => navigation.navigate('Register')}></Button>
-                                <Button title="login" onPress={() => navigation.navigate('Login')}></Button> */}
-                                <Text style={styles.title}>fam_name,Board,</Text>
-                                {/* <Badge status="success" value="ACTIVE" />
+                               
+                                <Button title="register" onPress={() => navigation.navigate('Register')}></Button>
+                                <Button title="login" onPress={() => navigation.navigate('Login')}></Button>
+                                <Text>All Tasks</Text>
+                                <Badge status="success" value="ACTIVE" />
                                 <Badge status="error" value="DELETED" />
                                 <Badge status="primary" value="COMPLETED" />
-                                <Badge status="warning" value="PENDING" /> */}
+                                <Badge status="warning" value="PENDING" />
+
+
+                                <View style={{ backgroundColor: 'white', flexDirection: 'row', justifyContent: 'space-evenly', display: isSelected.length === 0 ? 'none' : 'flex' }}><Text>{isSelected.length === 0 ? "" : isSelected.length + " - Selected"}</Text>
+                                    <Icon
+                                        onPress={() => {
+                                            AreYouSure(isSelected.length)
+                                        }}
+                                        name="delete"
+                                        color="black" />
+                                </View>
+                                <TouchableOpacity  onPress={() => navigation.navigate('AddNote', { addNote: (note) => addingNote(note),user:username,fam:fam_ID })}>
+                                <View style={styles.notesWrapper}>
+                                <View style={styles.containerNote}>
+                                
+                                <ListItem.Title>No Notes Yet</ListItem.Title>
+                                <ListItem.Subtitle>Add a note!</ListItem.Subtitle>
+                                </View>
+                                </View>
+                                
+                                </TouchableOpacity>
+
+
+                            </View>
+
+
+
+                            <TouchableOpacity style={styles.add_btn} onPress={() => navigation.navigate('AddNote', { addNote: (note) => addingNote(note) })}>
+                                <Icon
+                                    name="add"
+                                    color="white"
+                                />
+                            </TouchableOpacity>
+                        </LinearGradient>
+
+
+                        :
+                        <LinearGradient
+                            colors={['rgba(0,0,0,0.8)', 'transparent']}>
+                            <View>
+                                <Button title="register" onPress={() => navigation.navigate('Register')}></Button>
+                                <Button title="login" onPress={() => navigation.navigate('Login')}></Button>
+                                <Text>All Tasks</Text>
+                                <Badge status="success" value="ACTIVE" />
+                                <Badge status="error" value="DELETED" />
+                                <Badge status="primary" value="COMPLETED" />
+                                <Badge status="warning" value="PENDING" />
 
 
                                 <View style={{ backgroundColor: 'white', flexDirection: 'row', justifyContent: 'space-evenly', display: isSelected.length === 0 ? 'none' : 'flex' }}><Text>{isSelected.length === 0 ? "" : isSelected.length + " - Selected"}</Text>
@@ -431,13 +614,13 @@ const setFamNotesAgain=async()=>{
                                 <View style={styles.notesWrapper}>
                                     {
                                         fam_notes?.map((l, i) =>
-                                            
+
                                             <TouchableOpacity key={i} onPress={() => toggleOverlay(i)} onLongPress={() => {
 
                                                 setSelected([...isSelected, i])
                                             }}>
 
-                                                
+
                                                 <View style={styles.containerNote} >
                                                     <View style={{ alignSelf: 'flex-end', marginRight: 10 }}>
                                                         <Badge status={statusKinds[myStatusKinds.findIndex(k => k === l.status)]} />
@@ -470,7 +653,6 @@ const setFamNotesAgain=async()=>{
 
 
                                                     <ListItem.Subtitle>{l.text}</ListItem.Subtitle>
-                                                    <ListItem.Subtitle>{l.users_tagged}</ListItem.Subtitle>
                                                     <View style={{ alignSelf: 'center', justifyContent: 'center' }}>
                                                         <TouchableOpacity onPress={() => setModalVisible(true)}>
                                                             <Icon
@@ -572,121 +754,31 @@ const setFamNotesAgain=async()=>{
                                     <Note_Overlay updateNote={updateNote} toggleOverLayParent={toggleOverlay} navigation={navigation} UpdateStatus={UpdateStatus} note={fam_notes[current]} />
 
                                 </Overlay>
+
+
+
                             </View>
 
-                            <Pressable> style={styles.add_btn} onPress={() => navigation.navigate('AddNote', { addNote: (note, users) => addingNote(note, users) })}>
-                            <Icon
-                                name="add"
-                                color="white"
-                            />
-                        </Pressable>
 
-                    </View>
 
-                </ScrollView>
-            </SafeAreaView >
-        )
+                            <TouchableOpacity style={styles.add_btn} onPress={() => navigation.navigate('AddNote', { addNote: (note) => addingNote(note),user:username,fam:fam_ID })}>
+                                <Icon
+                                    name="add"
+                                    color="white"
+                                />
+                            </TouchableOpacity>
+                        </LinearGradient>
+
+
+
+
+
+
+                    }
+                </View>
+
+            </ScrollView>
+        </SafeAreaView >
+    )
 
 }
-
-const styles = StyleSheet.create({
-    container: {
-        backgroundColor: 'red',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderStyle: 'solid',
-        borderWidth: 1,
-        width: 150,
-        height: "100%",
-        marginTop: 50
-
-
-    },
-    containerNote: {
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderStyle: 'solid',
-        borderWidth: 1,
-        width: 150,
-        height: 150,
-        borderRadius: 15,
-        marginTop: 30,
-    },
-    noteRow: {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-evenly'
-
-    },
-    notesWrapper: {
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        alignItems: 'center',
-
-        justifyContent: 'space-evenly',
-        height: '65%'
-
-
-    },
-    Wrapper: {
-        height: Dimensions.get('window').height,
-        // overflow:'scroll'
-    },
-    centeredView: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: 22
-    },
-    modalView: {
-        // margin: 20,
-        backgroundColor: "white",
-        borderRadius: 20,
-        width: '40%',
-        height: '20%',
-        alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5
-    },
-    button: {
-        borderRadius: 20,
-        padding: 10,
-        elevation: 2
-    },
-    buttonOpen: {
-        backgroundColor: "#F194FF",
-    },
-    buttonClose: {
-        backgroundColor: "#2196F3",
-    },
-    textStyle: {
-        color: "white",
-        fontWeight: "bold",
-        textAlign: "center"
-    },
-    modalText: {
-        // marginBottom: 15,
-        textAlign: "center"
-    },
-    add_btn:{
-        backgroundColor:'orange',
-        width:'15%',
-        height:'8%',
-        alignSelf:'center',
-        borderRadius:25,
-        justifyContent:'center'
-    },
-    title:{
-        fontSize:30,
-        fontFamily:"Inter_900Black"
-    }
-});

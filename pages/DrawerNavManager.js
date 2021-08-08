@@ -31,11 +31,11 @@ export default function DrawerNavManager({route,navigation}) {
     return (
     
     <Drawer.Navigator initialRouteName="All">
-       
+         {console.log(route.params.fam_ID)}
        <Drawer.Screen
             name="Profile"
             component={profilePage}
-            // initialParams={{type:'Deleted'}}
+            initialParams={{usernameUnique:route.params.username,famIDUnique:route.params.fam_ID}}
             options={{ drawerLabel: 'Profile',drawerIcon: ({ tintColor }) => (
                 <Icon name="person" color="black"/>
               ) }}
@@ -44,7 +44,7 @@ export default function DrawerNavManager({route,navigation}) {
  
             name="All"
             component={boardPage}
-            initialParams={{type:'All'}}
+            initialParams={{type:'All',usernameUnique:new String(route.params.username).toString(),famIDUnique:new String(route.params.fam_ID).toString()}}
             options={{ drawerLabel: 'All',drawerIcon: ({ tintColor }) => (
                 <Icon name="subject" color="black"/>
               )  }}
@@ -53,7 +53,7 @@ export default function DrawerNavManager({route,navigation}) {
 <Drawer.Screen
             name="Active"
             component={boardPage}
-            initialParams={{type:'Active'}}
+            initialParams={{type:'Active',usernameUnique:new String(route.params.username).toString(),famIDUnique:new String(route.params.fam_ID).toString()}}
             options={{ drawerLabel: 'Active',  drawerIcon: ({ tintColor }) => (
                 <Badge status="success"/>
               ) }}
@@ -61,7 +61,7 @@ export default function DrawerNavManager({route,navigation}) {
           <Drawer.Screen
             name="Pending"
             component={boardPage}
-            initialParams={{type:'Pending'}}
+            initialParams={{type:'Pending',usernameUnique:new String(route.params.username).toString(),famIDUnique:new String(route.params.fam_ID).toString()}}
             options={{ drawerLabel: 'Pending',drawerIcon: ({ tintColor }) => (
                 <Badge status="warning"/>
               ) }}
@@ -69,7 +69,7 @@ export default function DrawerNavManager({route,navigation}) {
           <Drawer.Screen
             name="Completed"
             component={boardPage}
-            initialParams={{type:'Completed'}}
+            initialParams={{type:'Completed',usernameUnique:new String(route.params.username).toString(),famIDUnique:new String(route.params.fam_ID).toString()}}
             options={{ drawerLabel: 'Completed',drawerIcon: ({ tintColor }) => (
                 <Badge status="primary"/>
               ) }}
@@ -77,7 +77,7 @@ export default function DrawerNavManager({route,navigation}) {
          <Drawer.Screen
             name="Deleted"
             component={boardPage}
-            initialParams={{type:'Deleted'}}
+            initialParams={{type:'Deleted',usernameUnique:new String(route.params.username).toString(),famIDUnique:new String(route.params.fam_ID).toString()}}
             options={{ drawerLabel: 'Deleted',drawerIcon: ({ tintColor }) => (
                 <Badge status="error"/>
               ) }}
